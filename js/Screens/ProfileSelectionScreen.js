@@ -492,6 +492,13 @@ class ProfileSelectionScreen {
     createNewProfile() {
         console.log('➕ Criando novo perfil...');
         
+        // Limpar container antes de navegar para garantir layout correto
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.innerHTML = '';
+            container.style.cssText = '';
+        }
+        
         if (window.eventSystem && window.eventSystem.showScreen) {
             window.eventSystem.showScreen('profile-creation');
         } else if (window.profileCreationScreen) {

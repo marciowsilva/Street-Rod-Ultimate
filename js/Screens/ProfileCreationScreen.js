@@ -9,8 +9,23 @@ class ProfileCreationScreen {
     
     initialize() {
         console.log('🆕 [ProfileCreationScreen] Inicializando tela completa...');
+        
+        // Garantir que o container está limpo e sem estilos inline problemáticos
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.style.cssText = '';
+            container.style.minHeight = '100vh';
+            container.style.width = '100%';
+        }
+        
         this.createScreen();
         this.attachEvents();
+        
+        // Forçar reflow para garantir que os estilos sejam aplicados corretamente
+        if (container) {
+            container.offsetHeight; // Trigger reflow
+        }
+        
         return true;
     }
     
@@ -20,6 +35,11 @@ class ProfileCreationScreen {
             console.error('❌ Container não encontrado');
             return;
         }
+        
+        // Limpar completamente o container antes de criar nova tela
+        container.innerHTML = '';
+        // Remover estilos inline que possam interferir e garantir layout desktop
+        container.style.cssText = 'min-height: 100vh; width: 100%; position: relative;';
         
         container.innerHTML = `
             <div id="profile-creation-screen" class="screen-container">
@@ -272,19 +292,57 @@ class ProfileCreationScreen {
         
         this.addStyles();
         this.updateSummary();
+        
+        // Forçar reflow e garantir que os estilos sejam aplicados corretamente
+        setTimeout(() => {
+            const screen = document.getElementById('profile-creation-screen');
+            if (screen) {
+                // Trigger reflow para garantir que os estilos sejam aplicados
+                screen.offsetHeight;
+                
+                // Verificar se estamos em modo desktop e forçar layout se necessário
+                if (window.innerWidth > 768) {
+                    const difficultyOptions = screen.querySelector('.difficulty-options');
+                    const carOptions = screen.querySelector('.car-options');
+                    
+                    if (difficultyOptions) {
+                        const computedStyle = window.getComputedStyle(difficultyOptions);
+                        if (computedStyle.gridTemplateColumns === '1fr') {
+                            difficultyOptions.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                        }
+                    }
+                    
+                    if (carOptions) {
+                        const computedStyle = window.getComputedStyle(carOptions);
+                        if (computedStyle.gridTemplateColumns === '1fr') {
+                            carOptions.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                        }
+                    }
+                }
+            }
+        }, 100);
     }
     
     addStyles() {
+        // Remover estilos anteriores se existirem para evitar duplicação
+        const existingStyle = document.getElementById('profile-creation-styles');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+        
         const style = document.createElement('style');
+        style.id = 'profile-creation-styles'; // ID para identificar e remover depois
         style.textContent = `
             /* ESTILOS BÁSICOS (reutilizando do ProfileSelectionScreen) */
             #profile-creation-screen.screen-container {
                 min-height: 100vh;
+                min-width: 100%;
                 background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
                 color: white;
                 display: flex;
                 flex-direction: column;
                 font-family: 'Rajdhani', sans-serif;
+                box-sizing: border-box;
             }
             
             .screen-header {
@@ -350,6 +408,7 @@ class ProfileCreationScreen {
                 max-width: 1200px;
                 margin: 0 auto;
                 width: 100%;
+                box-sizing: border-box;
             }
             
             .creation-form {
@@ -437,8 +496,14 @@ class ProfileCreationScreen {
             /* OPÇÕES DE DIFICULDADE */
             .difficulty-options {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
+            }
+            
+            @media (max-width: 1024px) {
+                .difficulty-options {
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                }
             }
             
             .difficulty-card {
@@ -519,8 +584,14 @@ class ProfileCreationScreen {
             /* OPÇÕES DE CARRO */
             .car-options {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
+            }
+            
+            @media (max-width: 1024px) {
+                .car-options {
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                }
             }
             
             .car-card {
@@ -749,8 +820,8 @@ class ProfileCreationScreen {
                 font-style: italic;
             }
             
-            /* RESPONSIVO */
-            @media (max-width: 768px) {
+            /* RESPONSIVO - Apenas para telas realmente pequenas */
+            @media screen and (max-width: 768px) {
                 .game-title {
                     font-size: 2.5rem;
                 }
@@ -784,6 +855,30 @@ class ProfileCreationScreen {
                 
                 .btn-primary {
                     min-width: unset;
+                }
+            }
+            
+            /* Garantir layout desktop em telas maiores */
+            @media screen and (min-width: 769px) {
+                .difficulty-options {
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+                }
+                
+                .car-options {
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+                }
+                
+                .footer-buttons {
+                    flex-direction: row !important;
+                }
+                
+                .button-group {
+                    flex-direction: row !important;
+                    width: auto !important;
+                }
+                
+                .btn {
+                    width: auto !important;
                 }
             }
         `;
