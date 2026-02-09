@@ -1,0 +1,201 @@
+/* ============= LOADING SYSTEM STYLES ============= */
+#game-loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0C0C0D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.loading-content {
+    width: 680px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.loading-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #F14144;
+    margin-bottom: 40px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(241, 65, 68, 0.8);
+}
+
+.loading-spinner-container {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 40px auto;
+}
+
+.loading-spinner {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(45, 45, 45, 0.3);
+    border-top: 3px solid #E13847;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    box-sizing: border-box;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modules-table-container {
+    width: 88%;
+    margin: 0 auto 40px auto;
+}
+
+.modules-table {
+    width: 75%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    font-weight: 500;
+    margin: 0 auto;
+}
+
+.module-row {
+    height: 42px;
+    border-bottom: 1px solid #2D2D2D;
+}
+
+.module-name {
+    padding: 0;
+    text-align: left;
+    color: #A9A9A9;
+    width: 70%;
+    letter-spacing: 0.3px;
+    padding-left: 2px;
+    vertical-align: middle;
+}
+
+.module-status {
+    padding: 0;
+    text-align: right;
+    width: 30%;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.progress-container {
+    width: 78%;
+    margin: 0 auto;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    color: #A9A9A9;
+    font-weight: 500;
+}
+
+.progress-text {
+    color: #F14144;
+    font-weight: 700;
+    font-size: 17px;
+    text-shadow: 0 0 6px rgba(241, 65, 68, 0.7);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 7px;
+    background-color: rgba(45, 45, 45, 0.6);
+    border-radius: 3.5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #E13847, #F14144);
+    border-radius: 3.5px;
+    transition: width 0.35s ease-out;
+}
+
+.module-counter {
+    font-size: 11.5px;
+    color: #666666;
+    margin-top: 22px;
+    font-weight: 500;
+    letter-spacing: 0.9px;
+}
+
+.counter-value {
+    color: #666666;
+    font-weight: 700;
+}
+
+.loading-footer {
+    font-size: 10.5px;
+    color: #444444;
+    margin-top: 35px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(45, 45, 45, 0.6);
+}
+
+.status-bg {
+    display: inline-block;
+    padding: 1px 14px 0px 14px;
+    border-radius: 2px;
+    min-width: 105px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.7px;
+}
+
+.status-Pendente .status-bg {
+    color: #666666;
+    background-color: #2D2D2D;
+}
+
+.status-Carregando .status-bg {
+    color: #D1A110;
+    background-color: rgba(209, 161, 16, 0.25);
+    text-shadow: 0 0 6px rgba(209, 161, 16, 0.7);
+}
+
+.status-OK .status-bg {
+    color: #55A213;
+    background-color: rgba(85, 162, 19, 0.25);
+    text-shadow: 0 0 6px rgba(85, 162, 19, 0.7);
+}
+
+.status-Erro .status-bg {
+    color: #E13847;
+    background-color: rgba(225, 56, 71, 0.25);
+    text-shadow: 0 0 6px rgba(225, 56, 71, 0.7);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .loading-title {
+        font-size: 36px;
+    }
+    
+    .modules-table {
+        width: 100%;
+    }
+    
+    .progress-container {
+        width: 95%;
+    }
+}
+
+/* ============= FIM LOADING STYLES ============= */
