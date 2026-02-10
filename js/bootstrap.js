@@ -10,15 +10,37 @@ window.game = window.game || {
 
 window.currentProfile = window.currentProfile || null;
 
+// Cache de scripts já carregados
+const loadedScripts = new Set();
+
 // Função para carregar scripts dinamicamente
 function loadScript(src) {
     return new Promise((resolve, reject) => {
+        // Verificar se já foi carregado
+        if (loadedScripts.has(src)) {
+            console.log(`⏭️ ${src} já foi carregado anteriormente, pulando...`);
+            resolve();
+            return;
+        }
+        
+        // Verificar se já existe no DOM
+        const existingScript = Array.from(document.querySelectorAll('script[src]'))
+            .find(s => s.src.includes(src.split('/').pop()));
+        
+        if (existingScript) {
+            console.log(`⏭️ ${src} já existe no DOM, pulando...`);
+            loadedScripts.add(src);
+            resolve();
+            return;
+        }
+        
         console.log(`📦 Carregando: ${src}`);
         
         const script = document.createElement('script');
         script.src = src;
         script.onload = () => {
             console.log(`✅ ${src} carregado`);
+            loadedScripts.add(src);
             resolve();
         };
         script.onerror = () => {
@@ -39,19 +61,33 @@ async function initializeSystem() {
         const essentialScripts = [
             'js/ProfileManager.js',
             'js/EventSystem.js',
-            'js/MainMenuScreen.js',
-            'js/ProfileSelectionScreen.js',
-            'js/ProfileCreationScreen.js'
+            'js/Screens/MainMenuScreen.js',
+            'js/Screens/ProfileSelectionScreen.js',
+            'js/Screens/ProfileCreationScreen.js'
         ];
         
         for (const script of essentialScripts) {
-            // Verificar se já está carregado
-            const scriptName = script.split('/').pop().replace('.js', '');
-            const isLoaded = window[scriptName] || window[scriptName.toLowerCase()];
+            // Verificar se a instância da tela já existe
+            const fileName = script.split('/').pop(); // Extrair apenas o nome do arquivo
+            const instanceMap = {
+                'MainMenuScreen.js': 'mainMenuScreen',
+                'ProfileSelectionScreen.js': 'profileSelectionScreen',
+                'ProfileCreationScreen.js': 'profileCreationScreen',
+                'ProfileManager.js': 'profileManager',
+                'EventSystem.js': 'eventSystem'
+            };
             
-            if (!isLoaded) {
-                await loadScript(script);
+            const instanceCheck = instanceMap[fileName];
+            const hasInstance = instanceCheck ? window[instanceCheck] : false;
+            
+            // Se já tem a instância, não precisa carregar novamente
+            if (hasInstance) {
+                console.log(`⏭️ ${script} já tem instância (${instanceCheck}), pulando carregamento...`);
+                continue;
             }
+            
+            // Tentar carregar (a função loadScript já verifica duplicação)
+            await loadScript(script);
         }
         
         // 2. Aguardar EventSystem
@@ -116,21 +152,30 @@ function showFirstScreen() {
     console.log('🔍 Decidindo primeira tela...');
     
     let targetScreen = 'profile-selection';
-    let profileName = '';
     
     // Verificar perfis
     if (window.profileManager) {
         const profiles = window.profileManager.getAllProfiles();
-        const currentProfile = window.profileManager.getCurrentProfile();
         
         console.log(`📊 ${profiles.length} perfil(s) encontrado(s)`);
         
-        if (currentProfile) {
-            targetScreen = 'main-menu';
-            profileName = currentProfile.name;
-            window.eventSystem.setCurrentProfile(currentProfile);
-        } else if (profiles.length === 0) {
+        // Sempre mostrar seleção de perfis, exceto se não houver nenhum perfil
+        if (profiles.length === 0) {
             targetScreen = 'profile-creation';
+            console.log('🆕 Nenhum perfil encontrado → Criar primeiro perfil');
+        } else {
+            // Limpar perfil atual para forçar seleção manual
+            const currentProfile = window.profileManager.getCurrentProfile();
+            if (currentProfile) {
+                console.log(`🔄 Limpando perfil atual (${currentProfile.name}) para mostrar seleção`);
+                // Remover perfil atual do localStorage para forçar seleção
+                localStorage.removeItem('streetrod2_current_profile');
+                localStorage.removeItem('sr2_currentProfile');
+                window.currentProfile = null;
+                window.eventSystem.setCurrentProfile(null);
+            }
+            targetScreen = 'profile-selection';
+            console.log('👥 Mostrando seleção de perfis');
         }
     }
     
@@ -139,22 +184,11 @@ function showFirstScreen() {
     // Mostrar tela
     if (window.eventSystem.showScreen(targetScreen)) {
         console.log(`✅ Tela ${targetScreen} mostrada`);
-        
-        // Notificação de boas-vindas
-        if (targetScreen === 'main-menu' && profileName) {
-            setTimeout(() => {
-                if (window.eventSystem.showNotification) {
-                    window.eventSystem.showNotification(`Bem-vindo, ${profileName}!`, 'success');
-                }
-            }, 800);
-        }
     } else {
         console.error(`❌ Falha ao mostrar ${targetScreen}`);
         
-        // Fallback
-        if (targetScreen !== 'profile-selection') {
-            window.eventSystem.showScreen('profile-selection');
-        }
+        // Fallback para seleção de perfis
+        window.eventSystem.showScreen('profile-selection');
     }
 }
 

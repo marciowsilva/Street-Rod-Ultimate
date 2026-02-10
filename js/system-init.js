@@ -168,33 +168,31 @@ window.systemInit = {
         console.log(`📊 Perfis encontrados: ${profiles.length}`);
         console.log(`👤 Perfil atual: ${currentProfile ? currentProfile.name : 'Nenhum'}`);
         
-        // Decidir qual tela mostrar primeiro
-        if (currentProfile) {
-            // 1. Tem perfil carregado -> Menu Principal
-            console.log(`🎮 Indo para menu principal (perfil: ${currentProfile.name})`);
-            window.eventSystem.setCurrentProfile(currentProfile);
-            
-            setTimeout(() => {
-                window.eventSystem.showScreen('main-menu');
-                window.eventSystem.showNotification(`Bem-vindo de volta, ${currentProfile.name}!`, 'success');
-            }, 300);
-            
-        } else if (profiles.length > 0) {
-            // 2. Tem perfis mas nenhum selecionado -> Seleção de Perfis
-            console.log('👥 Indo para seleção de perfis');
-            
-            setTimeout(() => {
-                window.eventSystem.showScreen('profile-selection');
-                window.eventSystem.showNotification('Selecione um perfil para continuar', 'info');
-            }, 300);
-            
-        } else {
-            // 3. Sem perfis -> Criação de Perfil
+        // Sempre mostrar seleção de perfis, exceto se não houver nenhum perfil
+        if (profiles.length === 0) {
+            // Sem perfis -> Criação de Perfil
             console.log('🆕 Indo para criação de perfil');
             
             setTimeout(() => {
                 window.eventSystem.showScreen('profile-creation');
                 window.eventSystem.showNotification('Crie seu primeiro perfil!', 'info');
+            }, 300);
+        } else {
+            // Tem perfis -> Sempre mostrar Seleção de Perfis (mesmo se houver perfil atual)
+            if (currentProfile) {
+                console.log(`🔄 Limpando perfil atual (${currentProfile.name}) para mostrar seleção`);
+                // Limpar perfil atual para forçar seleção manual
+                localStorage.removeItem('streetrod2_current_profile');
+                localStorage.removeItem('sr2_currentProfile');
+                window.currentProfile = null;
+                window.eventSystem.setCurrentProfile(null);
+            }
+            
+            console.log('👥 Indo para seleção de perfis');
+            
+            setTimeout(() => {
+                window.eventSystem.showScreen('profile-selection');
+                window.eventSystem.showNotification('Selecione um perfil para continuar', 'info');
             }, 300);
         }
     },

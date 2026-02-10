@@ -113,7 +113,9 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
         background: #0a0a0f;
         display: flex;
         flex-direction: column;
@@ -123,31 +125,46 @@
         color: white;
         text-align: center;
         transition: opacity 0.5s ease;
+        padding: 20px;
+        box-sizing: border-box;
     ">
         <div style="
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255,71,87,0.3);
-            border-top: 5px solid #ff4757;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,71,87,0.3);
+            border-top: 4px solid #ff4757;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
         "></div>
-        <h2 style="color: #ff4757; margin-bottom: 10px;">STREET ROD II</h2>
-        <p style="color: #aaa;">Inicializando...</p>
+        <h2 style="
+            color: #ff4757; 
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        ">STREET ROD II</h2>
+        <p style="
+            color: #aaa;
+            margin: 0;
+            font-size: 0.95rem;
+        ">Inicializando...</p>
 
         <!-- Botão de emergência -->
         <button id="emergency-btn" onclick="skipLoading()" style="
-            margin-top: 30px;
-            padding: 10px 20px;
+            margin-top: 20px;
+            padding: 8px 16px;
             background: rgba(255,71,87,0.2);
             color: #ff4757;
             border: 1px solid rgba(255,71,87,0.5);
             border-radius: 6px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
             display: none;
+            flex-shrink: 0;
         ">
             Pular Loading
         </button>
@@ -229,24 +246,27 @@
             }
         };
 
-        // Carregar outras telas após o bootstrap
+        // Carregar outras telas após o bootstrap (apenas se não foram carregadas pelo bootstrap)
         window.addEventListener('load', function () {
-            console.log('📦 Carregando telas adicionais...');
+            console.log('📦 Verificando telas adicionais...');
 
-            // Carregar telas adicionais de forma assíncrona
+            // Carregar apenas telas que não foram carregadas pelo bootstrap
             const additionalScripts = [
-                'js/MainMenuScreen.js',
-                'js/ProfileSelectionScreen.js',
-                'js/ProfileCreationScreen.js',
-                'js/GarageScreen.js',
-                'js/SettingsScreen.js'
+                { src: 'js/GarageScreen.js', check: 'garageScreen' },
+                { src: 'js/SettingsScreen.js', check: 'settingsScreen' }
             ];
 
-            additionalScripts.forEach(src => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.async = true;
-                document.head.appendChild(script);
+            additionalScripts.forEach(({ src, check }) => {
+                // Verificar se já foi carregado
+                if (!window[check]) {
+                    console.log(`📦 Carregando: ${src}`);
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    document.head.appendChild(script);
+                } else {
+                    console.log(`✅ ${src} já carregado`);
+                }
             });
         });
     </script>

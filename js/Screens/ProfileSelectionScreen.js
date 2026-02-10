@@ -50,7 +50,7 @@ class ProfileSelectionScreen {
                     border-radius: 15px;
                     padding: 30px;
                     width: 100%;
-                    max-width: 800px;
+                    max-width: 900px;
                     margin-bottom: 30px;
                 ">
                     <h2 style="
@@ -72,16 +72,30 @@ class ProfileSelectionScreen {
                         ">0 perfis</span>
                     </h2>
                     
-                    <div id="profiles-list" style="min-height: 300px;">
-                        <!-- Perfis serão carregados aqui -->
-                        <div style="
-                            text-align: center;
-                            padding: 60px 20px;
-                            color: #666;
+                    <div id="profiles-scroll-container" style="
+                        position: relative;
+                        width: 100%;
+                        max-height: 500px;
+                        overflow: hidden;
+                    ">
+                        <!-- Container com scroll vertical -->
+                        <div id="profiles-list-wrapper" style="
+                            width: 100%;
+                            max-height: 500px;
+                            overflow-y: auto;
+                            overflow-x: hidden;
+                            scroll-behavior: smooth;
+                            padding-right: 10px;
+                            box-sizing: border-box;
                         ">
-                            <div style="font-size: 4rem; margin-bottom: 20px;">👤</div>
-                            <h3 style="color: #aaa; margin-bottom: 10px;">Nenhum perfil encontrado</h3>
-                            <p>Crie seu primeiro perfil para começar a jogar!</p>
+                            <div id="profiles-list" style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 15px;
+                                padding: 5px 0;
+                            ">
+                                <!-- Perfis serão carregados aqui -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -160,32 +174,69 @@ class ProfileSelectionScreen {
     addStyles() {
         const style = document.createElement('style');
         style.textContent = `
+            /* Scrollbar vertical customizada */
+            #profiles-list-wrapper {
+                /* Scrollbar sempre reserva espaço à direita */
+                padding-right: 10px;
+            }
+            
+            #profiles-list-wrapper::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            #profiles-list-wrapper::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 4px;
+                margin: 5px 0;
+            }
+            
+            #profiles-list-wrapper::-webkit-scrollbar-thumb {
+                background: rgba(255, 71, 87, 0.4);
+                border-radius: 4px;
+                transition: background 0.2s ease;
+            }
+            
+            #profiles-list-wrapper::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 71, 87, 0.7);
+            }
+            
+            /* Firefox */
+            #profiles-list-wrapper {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 71, 87, 0.4) rgba(255, 255, 255, 0.05);
+            }
+            
             .profile-card {
                 background: rgba(255, 255, 255, 0.08);
                 border-radius: 12px;
                 padding: 20px;
-                margin-bottom: 15px;
                 border: 2px solid transparent;
                 transition: all 0.3s ease;
                 cursor: pointer;
                 display: flex;
+                flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+                width: 100%;
+                min-height: 120px;
             }
             
             .profile-card:hover {
                 background: rgba(255, 255, 255, 0.12);
                 border-color: #444;
-                transform: translateY(-2px);
+                transform: translateX(5px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             }
             
             .profile-card.selected {
                 background: rgba(46, 213, 115, 0.1);
                 border-color: #2ed573;
+                box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
             }
             
             .profile-info {
                 flex: 1;
+                margin-bottom: 0;
             }
             
             .profile-name {
@@ -200,12 +251,14 @@ class ProfileSelectionScreen {
                 font-size: 0.9rem;
                 display: flex;
                 gap: 20px;
+                flex-wrap: wrap;
+                margin-top: 8px;
             }
             
             .profile-stats {
                 display: flex;
                 gap: 15px;
-                margin-top: 10px;
+                margin-top: 12px;
             }
             
             .stat-item {
@@ -233,6 +286,12 @@ class ProfileSelectionScreen {
             .profile-actions {
                 display: flex;
                 gap: 10px;
+                margin-top: 0;
+                flex-shrink: 0;
+            }
+            
+            .profile-btn {
+                white-space: nowrap;
             }
             
             .profile-btn {
@@ -302,6 +361,7 @@ class ProfileSelectionScreen {
                     text-align: center;
                     padding: 60px 20px;
                     color: #666;
+                    width: 100%;
                 ">
                     <div style="font-size: 4rem; margin-bottom: 20px;">👤</div>
                     <h3 style="color: #aaa; margin-bottom: 10px;">Nenhum perfil salvo</h3>
@@ -385,6 +445,8 @@ class ProfileSelectionScreen {
                 }
             });
         });
+        
+        // Scroll vertical não precisa de configuração adicional
     }
     
     attachEvents() {
@@ -414,6 +476,8 @@ class ProfileSelectionScreen {
                 this.showImportExport();
             });
         }
+        
+        // Scroll vertical não precisa de navegação adicional
     }
     
     selectProfile(profileName) {

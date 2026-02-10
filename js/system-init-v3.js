@@ -294,12 +294,21 @@ function initializeGame() {
             console.warn('⚠️  Nenhuma tela registrada');
         }
 
-        // Decidir qual tela mostrar primeiro
-        if (currentProfile) {
-            console.log(`👤 Perfil ativo: ${currentProfile.name}`);
-            window.eventSystem.showScreen('main-menu');
+        // Sempre mostrar seleção de perfis ao iniciar (exceto se não houver perfis)
+        const profiles = window.profileManager ? window.profileManager.getAllProfiles() : [];
+        
+        if (profiles.length === 0) {
+            console.log('🆕 Nenhum perfil encontrado, mostrando criação de perfil');
+            window.eventSystem.showScreen('profile-creation');
         } else {
-            console.log('👤 Nenhum perfil ativo, mostrando seleção de perfil');
+            // Limpar perfil atual para forçar seleção manual
+            if (currentProfile) {
+                console.log(`🔄 Limpando perfil atual (${currentProfile.name}) para mostrar seleção`);
+                localStorage.removeItem('streetrod2_current_profile');
+                localStorage.removeItem('sr2_currentProfile');
+                window.currentProfile = null;
+            }
+            console.log('👤 Mostrando seleção de perfis');
             window.eventSystem.showScreen('profile-selection');
         }
 
