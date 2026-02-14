@@ -14,7 +14,8 @@ class ShopScreen {
           id: "eng_carb_1",
           name: "Carburador Simples",
           price: 150,
-          power: 5,
+          powerBonus: 5,
+          slot: "carburetor",
           desc: "Melhora o fluxo de ar básico.",
           icon: "🔧",
         },
@@ -22,7 +23,8 @@ class ShopScreen {
           id: "eng_carb_2",
           name: "Carburador Duplo",
           price: 450,
-          power: 12,
+          powerBonus: 12,
+          slot: "carburetor",
           desc: "Dobro de entrada, dobro de resposta.",
           icon: "🔧",
         },
@@ -30,7 +32,8 @@ class ShopScreen {
           id: "eng_intake",
           name: "Admissão Esportiva",
           price: 300,
-          power: 8,
+          powerBonus: 8,
+          slot: "intake",
           desc: "Filtro de alto fluxo.",
           icon: "💨",
         },
@@ -38,7 +41,8 @@ class ShopScreen {
           id: "eng_pistons",
           name: "Pistões Forjados",
           price: 1200,
-          power: 25,
+          powerBonus: 25,
+          slot: "pistons",
           desc: "Aguenta mais compressão.",
           icon: "⚙️",
         },
@@ -405,7 +409,7 @@ class ShopScreen {
 
       // Construir string de stats
       let statHtml = "";
-      if (item.power) statHtml += `<span>+${item.power} HP</span>`;
+      if (item.powerBonus) statHtml += `<span>+${item.powerBonus} HP</span>`;
       if (item.acc) statHtml += `<span>-${item.acc}% 0-100</span>`;
       if (item.grip) statHtml += `<span>+${item.grip} GRIP</span>`;
 

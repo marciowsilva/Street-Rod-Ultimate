@@ -16,6 +16,24 @@ class GarageScreen {
   show() {
     console.log("🏠 Abrindo Garagem");
     this.isActive = true;
+
+    // Forçar reload do perfil para garantir dados atualizados
+    if (window.profileManager) {
+      // Recarregar perfis do localStorage
+      window.profileManager.profiles = window.profileManager.loadProfiles();
+
+      // Pegar perfil atual atualizado
+      const currentProfileName = localStorage.getItem(
+        window.profileManager.currentProfileKey,
+      );
+      if (currentProfileName) {
+        window.profileManager.currentProfile =
+          window.profileManager.profiles.find(
+            (p) => p.name === currentProfileName,
+          );
+      }
+    }
+
     this.updateProfileData();
     this.render();
     this.attachEvents();
@@ -23,12 +41,24 @@ class GarageScreen {
   }
 
   hide() {
+    console.log("🏠 Escondendo GarageScreen");
     this.isActive = false;
     const container = document.getElementById("garage-container");
-    if (container) container.remove();
+    if (container) {
+      console.log("🗑️ Removendo garage-container");
+      container.remove();
+    }
 
     const style = document.getElementById("garage-styles");
-    if (style) style.remove();
+    if (style) {
+      console.log("🗑️ Removendo garage-styles");
+      style.remove();
+    }
+  }
+
+  cleanup() {
+    console.log("🧹 Limpando GarageScreen (cleanup)");
+    this.hide();
   }
 
   updateProfileData() {
@@ -41,6 +71,21 @@ class GarageScreen {
   }
 
   render() {
+    console.log("🏠 Renderizando GarageScreen");
+
+    // Garantir que não há containers antigos
+    const oldContainer = document.getElementById("garage-container");
+    if (oldContainer) {
+      console.log("🗑️ Removendo garage-container antigo antes de renderizar");
+      oldContainer.remove();
+    }
+
+    const oldStyle = document.getElementById("garage-styles");
+    if (oldStyle) {
+      console.log("🗑️ Removendo garage-styles antigo antes de renderizar");
+      oldStyle.remove();
+    }
+
     const container = document.createElement("div");
     container.id = "garage-container";
     container.className = "ps-root";
@@ -449,13 +494,85 @@ class GarageScreen {
                 <div class="gr-parts-list">
                     <div class="gr-label-sec">PEÇAS INSTALADAS</div>
                     
-                    ${this.renderPartItem("engine", "Motor V8 Stock", "Original")}
-                    ${this.renderPartItem("tire", "Pneus Radiais", "Padrão")}
-                    ${this.renderPartItem("gear", "Câmbio 4 Marchas", "Manual")}
+                    ${this.renderInstalledParts(car)}
                 </div>
             </div>
         `;
     }
+  }
+
+  renderInstalledParts(car) {
+    console.log("🔧 Renderizando peças instaladas para:", car.name);
+    console.log("📦 installedParts:", car.installedParts);
+
+    // Carregar inventário do perfil para recuperar nomes das peças
+    const allParts = this.getAllPartsCatalog();
+
+    if (!car.installedParts || Object.keys(car.installedParts).length === 0) {
+      return `
+        <div class="gr-part-item" style="color: #666; font-style: italic;">
+          <div class="gr-part-icon">📦</div>
+          <div class="gr-part-info">
+            <span class="gr-part-name">Nenhuma peça instalada</span>
+            <span class="gr-part-level">Use a Oficina para fazer upgrades</span>
+          </div>
+        </div>
+      `;
+    }
+
+    let partsHtml = "";
+
+    // Iterar sobre peças instaladas
+    for (const [slot, partId] of Object.entries(car.installedParts)) {
+      console.log(`🔍 Procurando peça: slot=${slot}, partId=${partId}`);
+
+      // Procurar peça no catálogo
+      const part = allParts.find((p) => p.id === partId);
+
+      if (part) {
+        console.log(`✅ Peça encontrada:`, part);
+        const stats = [];
+        if (part.powerBonus) stats.push(`+${part.powerBonus} HP`);
+        if (part.speedBonus) stats.push(`+${part.speedBonus} km/h`);
+
+        partsHtml += this.renderPartItem(
+          slot,
+          part.name,
+          stats.length > 0 ? stats.join(" • ") : "Upgrade",
+        );
+      } else {
+        console.warn(`⚠️ Peça não encontrada no catálogo: ${partId}`);
+        partsHtml += this.renderPartItem(
+          slot,
+          `Peça #${partId}`,
+          "Desconhecida",
+        );
+      }
+    }
+
+    return partsHtml || this.renderPartItem("generic", "Nenhuma peça", "Stock");
+  }
+
+  getAllPartsCatalog() {
+    // Retornar todas as peças do catálogo da ShopScreen
+    // Se ShopScreen não estiver disponível, retornar array vazio
+    if (!window.shopScreen || !window.shopScreen.partsCatalog) {
+      console.warn("⚠️ ShopScreen ou catálogo de peças não disponível");
+      return [];
+    }
+
+    const catalog = window.shopScreen.partsCatalog;
+    const allParts = [];
+
+    // Concatenar todas as categorias
+    for (const category in catalog) {
+      if (Array.isArray(catalog[category])) {
+        allParts.push(...catalog[category]);
+      }
+    }
+
+    console.log(`📚 Catálogo carregado com ${allParts.length} peças`);
+    return allParts;
   }
 
   renderPartItem(iconType, name, level) {
@@ -552,7 +669,7 @@ class GarageScreen {
 
                 <div class="gr-actions">
                     <button class="gr-btn btn-drive" onclick="alert('Sistema de direção em breve!')">DIRIGIR</button>
-                    <button class="gr-btn btn-tune" onclick="window.garageScreen.goToShop()">TUNAR</button>
+                    <button class="gr-btn btn-tune" onclick="window.garageScreen.openTuning(${index})">TUNAR</button>
                     <button class="gr-btn btn-sell" onclick="window.garageScreen.sellCar(${index}, ${sellValue})">VENDER ($${sellValue.toLocaleString()})</button>
                 </div>
             `;
@@ -588,8 +705,10 @@ class GarageScreen {
     }
   }
 
-  goToShop() {
-    if (this.eventSystem) this.eventSystem.showScreen("shop-screen");
+  openTuning(vehicleIndex) {
+    if (this.eventSystem) {
+      this.eventSystem.showScreen("tuning-screen", { vehicleIndex });
+    }
   }
 
   updateUI() {

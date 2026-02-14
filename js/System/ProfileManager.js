@@ -72,6 +72,7 @@ class ProfileManager {
       cash: 10000,
       experience: 0,
       vehicles: [],
+      inventory: [], // Peças compradas mas não instaladas
       stats: {
         races: 0,
         wins: 0,
