@@ -1,595 +1,677 @@
-// ProfileSelectionScreen.js - Tela de Seleção de Perfis
-console.log('👥 Carregando ProfileSelectionScreen...');
+// ProfileSelectionScreen.js - Reconstruída com Padrão Garage
+console.log("👥 Carregando ProfileSelectionScreen (Standard Architecture)...");
 
 class ProfileSelectionScreen {
-    constructor() {
-        this.screenId = 'profile-selection';
-        this.profiles = [];
-        console.log('✅ ProfileSelectionScreen inicializado');
+  constructor() {
+    this.screenId = "profile-selection";
+    this.profiles = [];
+
+    // Configuração de Background (Slideshow)
+    this.backgrounds = [];
+    for (let i = 0; i < 50; i++) {
+      this.backgrounds.push(`./assets/images/backgrounds/bg-${i}.jpg`);
     }
-    
-    initialize() {
-        console.log('👥 Inicializando seleção de perfis...');
-        this.createScreen();
-        this.loadProfiles();
-        this.attachEvents();
+    this.fallbackBg =
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1600&auto=format&fit=crop";
+    this.bgIndex = Math.floor(Math.random() * this.backgrounds.length);
+    this.bgTimer = null;
+  }
+
+  initialize() {
+    this.createScreen();
+    this.loadProfiles();
+    this.attachEvents();
+  }
+
+  show(data = {}) {
+    console.log("👥 Mostrando ProfileSelectionScreen", data);
+
+    // Recriar se necessário (garantia de estado limpo)
+    if (!document.getElementById("ps-container")) {
+      this.createScreen();
+      this.attachEvents();
     }
-    
-    createScreen() {
-        const container = document.getElementById('game-container');
-        if (!container) return;
-        
-        container.innerHTML = `
-            <div id="profile-selection-screen" style="
-                min-height: 100vh;
-                background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-                padding: 40px 20px;
-                color: white;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            ">
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <h1 style="
-                        color: #ff4757;
-                        font-size: 3.5rem;
-                        text-transform: uppercase;
-                        letter-spacing: 3px;
-                        margin-bottom: 10px;
-                        text-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
-                    ">
-                        STREET ROD II
-                    </h1>
-                    <p style="color: #aaa; font-size: 1.2rem;">
-                        Selecione ou crie um perfil
-                    </p>
-                </div>
+
+    this.loadProfiles();
+
+    const container = document.getElementById("ps-container");
+    const backBtn = document.getElementById("ps-back-btn");
+    const title = document.getElementById("ps-main-title");
+    const subtitle = document.getElementById("ps-sub-title");
+
+    // Reset Slideshow
+    this.stopBackgroundSlideshow();
+
+    // MODO GESTÃO (Vindo do Menu)
+    if (data.canGoBack) {
+      container.classList.add("management-mode");
+      backBtn.style.display = "block";
+      this.startBackgroundSlideshow(); // Slideshow só no modo gestão (opcional)
+
+      // Textos de Gestão
+      if (title)
+        title.innerHTML =
+          'GESTÃO DE <span class="ps-accent-text">PERFIS</span>';
+      if (subtitle) subtitle.innerText = "GERENCIE SEUS PILOTOS";
+    }
+    // MODO BOOT (Início do Jogo)
+    else {
+      container.classList.remove("management-mode");
+      backBtn.style.display = "none";
+
+      // Textos de Boot
+      if (title)
+        title.innerHTML = 'STREET ROD <span class="ps-accent-text">II</span>';
+      if (subtitle) subtitle.innerText = "SELECIONE SEU PILOTO";
+    }
+  }
+
+  createScreen() {
+    const container = document.getElementById("game-container");
+    if (!container) return;
+
+    // Limpar anteriores
+    const existing = document.getElementById("ps-container");
+    if (existing) existing.remove();
+
+    // Background Default (Boot)
+    const bootBg =
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2070";
+
+    container.innerHTML = `
+        <div id="ps-container" class="ps-root">
+            <!-- Camadas de Background -->
+            <div id="ps-bg-layers">
+                <div class="ps-bg-layer current" style="background-image: url('${this.fallbackBg}')"></div>
+                <div class="ps-bg-layer next-ready"></div>
+            </div>
+
+            <!-- Overlay Global -->
+            <div class="ps-overlay"></div>
+            
+            <!-- Botão Voltar -->
+            <button id="ps-back-btn" class="nav-btn">← VOLTAR</button>
+            
+            <!-- Conteúdo Principal Wrapper -->
+            <div class="ps-content">
                 
-                <div style="
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 15px;
-                    padding: 30px;
-                    width: 100%;
-                    max-width: 900px;
-                    margin-bottom: 30px;
-                ">
-                    <h2 style="
-                        color: white;
-                        margin-bottom: 25px;
-                        border-bottom: 2px solid #ff4757;
-                        padding-bottom: 10px;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                    ">
-                        <span>PERFIS SALVOS</span>
-                        <span id="profiles-count" style="
-                            background: rgba(255, 71, 87, 0.2);
-                            color: #ff4757;
-                            padding: 5px 15px;
-                            border-radius: 20px;
-                            font-size: 0.9rem;
-                        ">0 perfis</span>
-                    </h2>
+                <!-- HEADER -->
+                <header class="ps-header">
+                    <div class="ps-title-group">
+                        <h1 id="ps-main-title" class="ps-game-title">STREET ROD <span class="ps-accent-text">II</span></h1>
+                        <p id="ps-sub-title" class="ps-game-subtitle">SELECIONE SEU PILOTO</p>
+                    </div>
                     
-                    <div id="profiles-scroll-container" style="
-                        position: relative;
-                        width: 100%;
-                        max-height: 500px;
-                        overflow: hidden;
-                    ">
-                        <!-- Container com scroll vertical -->
-                        <div id="profiles-list-wrapper" style="
-                            width: 100%;
-                            max-height: 500px;
-                            overflow-y: auto;
-                            overflow-x: hidden;
-                            scroll-behavior: smooth;
-                            padding-right: 10px;
-                            box-sizing: border-box;
-                        ">
-                            <div id="profiles-list" style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 15px;
-                                padding: 5px 0;
-                            ">
-                                <!-- Perfis serão carregados aqui -->
-                            </div>
+                    <!-- Stats / Info Extra (Opcional) -->
+                    <div class="ps-header-info">
+                        <!-- Pode ir contador ou versão aqui -->
+                    </div>
+                </header>
+
+                <!-- MAIN AREA (Sidebar + Grid) -->
+                <div class="ps-main">
+                    
+                    <!-- SIDEBAR (Apenas Modo Gestão vai mostrar via CSS) -->
+                    <aside class="ps-sidebar">
+                        <button id="sb-create-btn" class="ps-sidebar-btn">
+                            <span class="icon">➕</span> NOVO PERFIL
+                        </button>
+                        <button id="sb-refresh-btn" class="ps-sidebar-btn">
+                            <span class="icon">🔄</span> ATUALIZAR
+                        </button>
+                        <div class="ps-sidebar-info">
+                            Máximo: 3 Perfis
                         </div>
+                    </aside>
+
+                    <!-- GRID -->
+                    <div id="profiles-list" class="ps-grid">
+                        <!-- Cards injetados via JS -->
                     </div>
                 </div>
-                
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                    <button id="create-profile-btn" style="
-                        padding: 15px 35px;
-                        background: #2ed573;
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-family: 'Rajdhani', sans-serif;
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        transition: all 0.3s;
-                    ">
-                        <span style="font-size: 1.5rem;">+</span>
-                        CRIAR NOVO PERFIL
-                    </button>
-                    
-                    <button id="refresh-btn" style="
-                        padding: 15px 25px;
-                        background: #1e90ff;
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-family: 'Rajdhani', sans-serif;
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        transition: all 0.3s;
-                    ">
-                        <span style="font-size: 1.2rem;">🔄</span>
-                        ATUALIZAR
-                    </button>
-                    
-                    <button id="import-export-btn" style="
-                        padding: 15px 25px;
-                        background: #333;
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-family: 'Rajdhani', sans-serif;
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        transition: all 0.3s;
-                    ">
-                        <span style="font-size: 1.2rem;">📁</span>
-                        IMPORTAR/EXPORTAR
-                    </button>
+            </div>
+
+            <!-- Footer Versão -->
+            <div class="ps-version-footer">Street Rod Ultimate v2.5 • Premium Edition</div>
+        </div>
+    `;
+
+    this.addStyles();
+  }
+
+  addStyles() {
+    // Remover estilos antigos
+    const oldStyles = [
+      "profile-selection-styles",
+      "ps-premium-styles-v2",
+      "ps-premium-styles-v3",
+      "ps-premium-styles-v4",
+      "ps-premium-styles-v5",
+      "ps-premium-styles-v6",
+      "ps-premium-styles-v7",
+      "ps-premium-styles-v8",
+      "ps-premium-styles-v9",
+      "ps-premium-styles-v10",
+      "ps-premium-styles-v11",
+      "ps-premium-styles-v12",
+    ];
+    oldStyles.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    });
+
+    const style = document.createElement("style");
+    style.id = "ps-standard-styles";
+    style.textContent = `
+        /* --- VARIÁVEIS DE TEMA --- */
+        #ps-container {
+            --ps-primary: #2ed573; /* Verde (Boot Default) */
+            --ps-primary-rgb: 46, 213, 115;
+            --ps-bg-overlay: radial-gradient(circle at center, rgba(10, 10, 20, 0.7) 0%, rgba(5, 5, 10, 0.95) 100%);
+        }
+
+        #ps-container.management-mode {
+            --ps-primary: #9c88ff; /* Lilás (Gestão) */
+            --ps-primary-rgb: 156, 136, 255;
+            --ps-bg-overlay: rgba(10, 10, 20, 0.85); /* Flat Dark (Garage Style) */
+        }
+
+        /* --- ROOT CONTAINER --- */
+        #ps-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: #111; /* Fallback */
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-y: auto; /* Scroll Principal */
+            display: flex;
+            flex-direction: column;
+            
+            /* Boot Background Imagem Fixa */
+            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2070') center/cover no-repeat fixed;
+        }
+
+        #ps-container.management-mode {
+            /* No modo gestão, background vem das layers (slideshow) */
+            background: #111; 
+        }
+
+        /* --- BACKGROUND LAYERS (SLIDESHOW) --- */
+        #ps-bg-layers {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            display: none; /* Off no Boot */
+        }
+        #ps-container.management-mode #ps-bg-layers { display: block; }
+        
+        .ps-bg-layer {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .ps-bg-layer.current { opacity: 1; z-index: 1; }
+        .ps-bg-layer.next-ready { opacity: 0; z-index: 0; }
+
+        /* --- OVERLAY --- */
+        .ps-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--ps-bg-overlay);
+            backdrop-filter: blur(8px);
+            z-index: 0;
+            transition: background 0.5s;
+        }
+
+        /* --- BUTTONS --- */
+        .nav-btn {
+            position: absolute;
+            top: 30px; left: 30px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: inherit; font-weight: 600;
+            border-radius: 6px;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+        /* --- CONTENT WRAPPER (Igual Garage .gr-content) --- */
+        .ps-content {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            /* Boot: Centraliza verticalmente */
+            justify-content: center; 
+        }
+
+        #ps-container.management-mode .ps-content {
+            justify-content: flex-start; /* Management: Topo (Padrão) */
+            padding-top: 30px;
+            align-items: flex-start; /* Alinhar tudo à esquerda */
+        }
+
+        /* --- HEADER --- */
+        .ps-header {
+            display: flex;
+            justify-content: center; /* Boot: Center */
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid transparent; /* Boot: Sem linha */
+            padding-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        #ps-container.management-mode .ps-header {
+            justify-content: flex-start; /* Management: Left */
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1); /* Management: Linha */
+            width: 100%;
+        }
+
+        #ps-container.management-mode .ps-title-group {
+            margin-left: 100px; /* Padrão Garage: Espaço para botão Voltar */
+        }
+
+        .ps-game-title {
+            font-size: 4rem; /* Boot Size */
+            margin: 0;
+            font-weight: 800;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px rgba(var(--ps-primary-rgb), 0.5);
+            line-height: 1;
+        }
+
+        #ps-container.management-mode .ps-game-title {
+            font-size: 3rem; /* Management Size */
+            letter-spacing: 5px;
+        }
+
+        .ps-accent-text { color: var(--ps-primary); }
+
+        .ps-game-subtitle {
+            color: #aaa;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+        
+        #ps-container.management-mode .ps-game-subtitle {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 2px;
+            margin-top: 0;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .ps-main {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            justify-content: center; /* Boot: Center Grid */
+            align-items: flex-start;
+        }
+
+        #ps-container.management-mode .ps-main {
+            justify-content: flex-start; /* Management: Left Align Grid */
+            width: 100%;
+        }
+
+        /* --- SIDEBAR --- */
+        .ps-sidebar {
+            width: 250px;
+            display: none; /* Default Hidden (Boot) */
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 20px;
+        }
+
+        #ps-container.management-mode .ps-sidebar {
+            /* display: flex; - REMOVIDO SIDEBAR EM GESTÃO */
+        }
+
+        .ps-sidebar-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 6px;
+            display: flex; align-items: center; gap: 10px;
+            font-family: inherit; font-weight: 600;
+        }
+        .ps-sidebar-btn:hover {
+            background: rgba(var(--ps-primary-rgb), 0.2);
+            border-color: var(--ps-primary);
+            color: white;
+            padding-left: 20px;
+        }
+
+        .ps-sidebar-info {
+            margin-top: auto; font-size: 0.8rem; color: #666; text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;
+        }
+
+        /* --- GRID --- */
+        .ps-grid {
+            display: grid;
+            gap: 20px;
+            /* Boot: Centralizado, largura fixa se necessário */
+            grid-template-columns: repeat(3, 1fr); 
+            max-width: 1000px;
+        }
+
+        #ps-container.management-mode .ps-grid {
+            justify-content: center; /* Centralizar cards horizontalmente */
+            /* Limitar largura máx da coluna para manter aspecto quadrado */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 320px)); 
+            max-width: none;
+            width: 100%;
+        }
+
+        /* Media Query para Boot Mobile */
+        @media (max-width: 900px) {
+            .ps-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- CARDS --- */
+        .ps-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex; flex-direction: column; gap: 15px;
+            position: relative; overflow: hidden;
+            min-width: 280px;
+            min-height: 300px; /* Altura Mínima Garantida (Robustez) */
+            display: flex; flex-direction: column; justify-content: space-between; /* Espalhar conteúdo */
+        }
+
+        .ps-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--ps-primary);
+            box-shadow: 0 10px 30px rgba(var(--ps-primary-rgb), 0.2);
+        }
+
+        .ps-card.active {
+            border-color: var(--ps-primary);
+            background: rgba(var(--ps-primary-rgb), 0.1);
+        }
+
+        .ps-card h3 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: white; }
+        .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
+        
+        .ps-stats-row { display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .ps-stat { display: flex; flex-direction: column; }
+        .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; }
+        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; }
+        .ps-value.money { color: #2ecc71; }
+
+        .ps-actions { 
+            display: flex; gap: 10px; margin-top: 10px; opacity: 0; transition: 0.3s;
+            pointer-events: none; /* Default hidden */
+        }
+        .ps-card:hover .ps-actions { opacity: 1; pointer-events: auto; }
+
+        .ps-btn {
+            flex: 1; border: none; padding: 10px; border-radius: 6px;
+            font-weight: 700; cursor: pointer;
+            background: var(--ps-primary); color: white;
+        }
+        .ps-btn.delete { background: rgba(255,255,255,0.1); color: var(--ps-primary); flex: 0; }
+        .ps-btn.delete:hover { background: #ff4757; color: white; }
+
+        /* Empty State (Slot Vazio) */
+        .ps-empty {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 15px; /* Igual Card */
+            padding: 25px; /* Igual Card */
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px; /* Igual Card (Robustez para 0 perfis) */
+            box-sizing: border-box;
+            min-width: 280px; /* Igual Card */
+        }
+        .ps-empty:hover { 
+            border-color: var(--ps-primary); 
+            color: white; 
+            background: rgba(255,255,255,0.05); 
+            transform: translateY(-5px); /* Igual card hover */
+            box-shadow: 0 10px 30px rgba(var(--ps-primary-rgb), 0.1);
+        }
+
+        /* Footer Versão */
+        .ps-version-footer {
+            text-align: center; padding: 20px; color: #444; font-size: 0.8rem;
+            position: relative; z-index: 10;
+        }
+        #ps-container.management-mode .ps-version-footer { display: none; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  loadProfiles() {
+    if (window.profileManager) {
+      this.profiles = window.profileManager.getAllProfiles();
+    }
+    this.renderProfiles();
+  }
+
+  renderProfiles() {
+    const list = document.getElementById("profiles-list");
+    if (!list) return;
+
+    // Atualizar subtítulo com contagem (apenas se existir perfis)
+    const subtitle = document.getElementById("ps-sub-title");
+    if (subtitle && this.profiles.length > 0) {
+      // No boot, mostra msg fixa. Em gestão, mostra contagem.
+      const isManagement = document
+        .getElementById("ps-container")
+        .classList.contains("management-mode");
+      if (isManagement) {
+        subtitle.innerText = `${this.profiles.length} PERFIS ENCONTRADOS`;
+        subtitle.style.color = "var(--ps-primary)";
+      }
+    }
+
+    // LISTAGEM (Slots Logic: Always 3 items)
+    let html = "";
+
+    const currentProfile = window.profileManager?.getCurrentProfile();
+
+    // 1. Renderizar Perfis Existentes
+    html += this.profiles
+      .map((p, i) => {
+        const isActive = currentProfile?.name === p.name;
+        return `
+            <div class="ps-card ${isActive ? "active" : ""} anim-fade-up" style="animation-delay: ${i * 0.1}s">
+                <div class="ps-card-header">
+                    <div class="ps-level">NÍVEL ${p.level || 1}</div>
+                    <h3>${p.name}</h3>
                 </div>
                 
-                <div style="margin-top: 40px; color: #666; text-align: center; font-size: 0.9rem;">
-                    <p>© 2024 Street Rod II - Sistema de Múltiplos Perfis</p>
-                    <p style="margin-top: 10px; color: #444;">
-                        Versão ${window.game?.version || '2.0.0'}
-                    </p>
+                <div class="ps-stats-row">
+                    <div class="ps-stat">
+                        <span class="ps-label">DINHEIRO</span>
+                        <span class="ps-value money">$${(p.cash || 0).toLocaleString()}</span>
+                    </div>
+                    <div class="ps-stat">
+                        <span class="ps-label">GARAGEM</span>
+                        <span class="ps-value">${p.vehicles?.length || 0} CARROS</span>
+                    </div>
+                </div>
+
+                <div class="ps-actions">
+                    <button class="ps-btn" onclick="window.profileSelectionScreen.selectProfile('${p.name.replace(/'/g, "\\'")}')">
+                        ${isActive ? "CONTINUAR" : "SELECIONAR"}
+                    </button>
+                    <button class="ps-btn delete" onclick="window.profileSelectionScreen.deleteProfile('${p.name.replace(/'/g, "\\'")}')">🗑️</button>
                 </div>
             </div>
         `;
-        
-        this.addStyles();
-    }
-    
-    addStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            /* Scrollbar vertical customizada */
-            #profiles-list-wrapper {
-                /* Scrollbar sempre reserva espaço à direita */
-                padding-right: 10px;
-            }
-            
-            #profiles-list-wrapper::-webkit-scrollbar {
-                width: 8px;
-            }
-            
-            #profiles-list-wrapper::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 4px;
-                margin: 5px 0;
-            }
-            
-            #profiles-list-wrapper::-webkit-scrollbar-thumb {
-                background: rgba(255, 71, 87, 0.4);
-                border-radius: 4px;
-                transition: background 0.2s ease;
-            }
-            
-            #profiles-list-wrapper::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 71, 87, 0.7);
-            }
-            
-            /* Firefox */
-            #profiles-list-wrapper {
-                scrollbar-width: thin;
-                scrollbar-color: rgba(255, 71, 87, 0.4) rgba(255, 255, 255, 0.05);
-            }
-            
-            .profile-card {
-                background: rgba(255, 255, 255, 0.08);
-                border-radius: 12px;
-                padding: 20px;
-                border: 2px solid transparent;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-                min-height: 120px;
-            }
-            
-            .profile-card:hover {
-                background: rgba(255, 255, 255, 0.12);
-                border-color: #444;
-                transform: translateX(5px);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            }
-            
-            .profile-card.selected {
-                background: rgba(46, 213, 115, 0.1);
-                border-color: #2ed573;
-                box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
-            }
-            
-            .profile-info {
-                flex: 1;
-                margin-bottom: 0;
-            }
-            
-            .profile-name {
-                color: white;
-                font-size: 1.4rem;
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-            
-            .profile-details {
-                color: #aaa;
-                font-size: 0.9rem;
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-                margin-top: 8px;
-            }
-            
-            .profile-stats {
-                display: flex;
-                gap: 15px;
-                margin-top: 12px;
-            }
-            
-            .stat-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 5px 10px;
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 6px;
-                min-width: 70px;
-            }
-            
-            .stat-value {
-                color: white;
-                font-weight: bold;
-                font-size: 1.2rem;
-            }
-            
-            .stat-label {
-                color: #aaa;
-                font-size: 0.8rem;
-                margin-top: 2px;
-            }
-            
-            .profile-actions {
-                display: flex;
-                gap: 10px;
-                margin-top: 0;
-                flex-shrink: 0;
-            }
-            
-            .profile-btn {
-                white-space: nowrap;
-            }
-            
-            .profile-btn {
-                padding: 8px 15px;
-                border: none;
-                border-radius: 6px;
-                font-family: 'Rajdhani', sans-serif;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-            
-            .select-btn {
-                background: #2ed573;
-                color: white;
-            }
-            
-            .select-btn:hover {
-                background: #26c46a;
-            }
-            
-            .delete-btn {
-                background: rgba(255, 71, 87, 0.2);
-                color: #ff4757;
-                border: 1px solid rgba(255, 71, 87, 0.5);
-            }
-            
-            .delete-btn:hover {
-                background: rgba(255, 71, 87, 0.3);
-            }
-            
-            button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            }
+      })
+      .join("");
+
+    // 2. Preencher slots vazios até completar 3
+    const emptySlots = 3 - this.profiles.length;
+    for (let i = 0; i < emptySlots; i++) {
+      const delay = (this.profiles.length + i) * 0.1;
+      html += `
+            <div class="ps-empty anim-fade-up" style="animation-delay: ${delay}s" onclick="window.profileSelectionScreen.createNewProfile()">
+                <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;">➕</div>
+                <h3 style="margin: 0; font-size: 1.2rem; color: #888; text-transform: uppercase;">NOVO PERFIL</h3>
+                <p style="font-size: 0.8rem; margin-top: 5px; color: #666;">CLIQUE PARA CRIAR</p>
+            </div>
         `;
-        
-        document.head.appendChild(style);
     }
-    
-    loadProfiles() {
-        console.log('📋 Carregando perfis...');
-        
-        if (window.profileManager) {
-            this.profiles = window.profileManager.getAllProfiles();
-            console.log(`✅ ${this.profiles.length} perfis carregados`);
-        } else {
-            this.profiles = [];
-            console.warn('⚠️ ProfileManager não disponível');
-        }
-        
-        this.renderProfiles();
+
+    list.innerHTML = html;
+  }
+
+  // --- LOGIC METHODS (Mantidos) ---
+
+  createNewProfile() {
+    if (this.profiles.length >= 3) {
+      alert("Limite de 3 perfis atingido.");
+      return;
     }
-    
-    renderProfiles() {
-        const profilesList = document.getElementById('profiles-list');
-        const profilesCount = document.getElementById('profiles-count');
-        
-        if (!profilesList || !profilesCount) return;
-        
-        // Atualizar contador
-        profilesCount.textContent = `${this.profiles.length} ${this.profiles.length === 1 ? 'perfil' : 'perfis'}`;
-        
-        if (this.profiles.length === 0) {
-            profilesList.innerHTML = `
-                <div style="
-                    text-align: center;
-                    padding: 60px 20px;
-                    color: #666;
-                    width: 100%;
-                ">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">👤</div>
-                    <h3 style="color: #aaa; margin-bottom: 10px;">Nenhum perfil salvo</h3>
-                    <p>Crie seu primeiro perfil para começar sua jornada no Street Rod II!</p>
-                    <button onclick="document.getElementById('create-profile-btn').click()" style="
-                        margin-top: 20px;
-                        padding: 10px 25px;
-                        background: #ff4757;
-                        color: white;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-family: 'Rajdhani', sans-serif;
-                        font-weight: bold;
-                    ">
-                        CRIAR PRIMEIRO PERFIL
-                    </button>
-                </div>
-            `;
-            return;
-        }
-        
-        // Obter perfil atual se existir
-        const currentProfile = window.profileManager ? 
-            window.profileManager.getCurrentProfile() : null;
-        
-        let html = '';
-        
-        this.profiles.forEach(profile => {
-            const isCurrent = currentProfile && currentProfile.name === profile.name;
-            const createdDate = profile.created ? 
-                new Date(profile.created).toLocaleDateString('pt-BR') : 'Data desconhecida';
-            
-            html += `
-                <div class="profile-card ${isCurrent ? 'selected' : ''}" data-profile-name="${profile.name}">
-                    <div class="profile-info">
-                        <div class="profile-name">
-                            ${profile.name}
-                            ${isCurrent ? '<span style="color:#2ed573; font-size:0.8rem; margin-left:10px;">(ATUAL)</span>' : ''}
-                        </div>
-                        <div class="profile-details">
-                            <span>Nível ${profile.level || 1}</span>
-                            <span>Criado em: ${createdDate}</span>
-                            <span>Veículos: ${profile.vehicles ? profile.vehicles.length : 0}</span>
-                        </div>
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <div class="stat-value" style="color: #4cd137;">$${(profile.cash || 0).toLocaleString()}</div>
-                                <div class="stat-label">Dinheiro</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${profile.stats?.wins || 0}</div>
-                                <div class="stat-label">Vitórias</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${profile.stats?.races || 0}</div>
-                                <div class="stat-label">Corridas</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="profile-actions">
-                        <button class="profile-btn select-btn" onclick="event.stopPropagation(); window.profileSelectionScreen.selectProfile('${profile.name.replace(/'/g, "\\'")}')">
-                            ${isCurrent ? 'CONTINUAR' : 'SELECIONAR'}
-                        </button>
-                        <button class="profile-btn delete-btn" onclick="event.stopPropagation(); window.profileSelectionScreen.deleteProfile('${profile.name.replace(/'/g, "\\'")}')">
-                            EXCLUIR
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        profilesList.innerHTML = html;
-        
-        // Adicionar evento de clique nas cards
-        document.querySelectorAll('.profile-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.profile-btn')) {
-                    const profileName = card.dataset.profileName;
-                    this.selectProfile(profileName);
-                }
-            });
-        });
-        
-        // Scroll vertical não precisa de configuração adicional
+    if (window.eventSystem) window.eventSystem.showScreen("profile-creation");
+  }
+
+  selectProfile(profileName) {
+    if (
+      window.profileManager &&
+      window.profileManager.selectProfile(profileName)
+    ) {
+      const profile = window.profileManager.getCurrentProfile();
+      window.eventSystem.setCurrentProfile(profile);
+      if (window.eventSystem?.showNotification)
+        window.eventSystem.showNotification(
+          `Bem-vindo, ${profileName}!`,
+          "success",
+        );
+      setTimeout(() => window.eventSystem.showScreen("main-menu"), 300);
     }
-    
-    attachEvents() {
-        // Botão CRIAR PERFIL
-        const createBtn = document.getElementById('create-profile-btn');
-        if (createBtn) {
-            createBtn.addEventListener('click', () => {
-                this.createNewProfile();
-            });
+  }
+
+  deleteProfile(profileName) {
+    if (!confirm(`Excluir ${profileName}?`)) return;
+    if (window.profileManager) {
+      const profiles = window.profileManager.getAllProfiles();
+      const idx = profiles.findIndex((p) => p.name === profileName);
+      if (idx !== -1) {
+        profiles.splice(idx, 1);
+        localStorage.setItem("streetrod2_profiles", JSON.stringify(profiles));
+        // Check current
+        const cur = window.profileManager.getCurrentProfile();
+        if (cur?.name === profileName) {
+          localStorage.removeItem("streetrod2_current_profile");
+          window.currentProfile = null;
+          
+          // CRITICAL FIX: Reset to Boot Mode immediately
+          const container = document.getElementById("ps-container");
+          const backBtn = document.getElementById("ps-back-btn");
+          const title = document.getElementById("ps-main-title");
+          const subtitle = document.getElementById("ps-sub-title");
+
+          if (container) container.classList.remove("management-mode");
+          if (backBtn) backBtn.style.display = "none";
+          if (title) title.innerHTML = 'STREET ROD <span class="ps-accent-text">II</span>';
+          if (subtitle) {
+              subtitle.innerText = "SELECIONE SEU PILOTO";
+              subtitle.style.color = "#aaa"; // Reset color
+          }
+          
+          // Stop management slideshow
+          this.stopBackgroundSlideshow();
         }
-        
-        // Botão ATUALIZAR
-        const refreshBtn = document.getElementById('refresh-btn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                this.loadProfiles();
-                if (window.eventSystem && window.eventSystem.showNotification) {
-                    window.eventSystem.showNotification('Perfis atualizados!', 'info');
-                }
-            });
-        }
-        
-        // Botão IMPORTAR/EXPORTAR
-        const importExportBtn = document.getElementById('import-export-btn');
-        if (importExportBtn) {
-            importExportBtn.addEventListener('click', () => {
-                this.showImportExport();
-            });
-        }
-        
-        // Scroll vertical não precisa de navegação adicional
+        this.loadProfiles();
+      }
     }
-    
-    selectProfile(profileName) {
-        console.log(`👤 Selecionando perfil: ${profileName}`);
-        
-        if (!window.profileManager) {
-            this.showError('Sistema de perfis não disponível');
-            return;
-        }
-        
-        if (window.profileManager.selectProfile(profileName)) {
-            const profile = window.profileManager.getCurrentProfile();
-            window.eventSystem.setCurrentProfile(profile);
-            
-            console.log(`✅ Perfil "${profileName}" selecionado`);
-            
-            if (window.eventSystem && window.eventSystem.showNotification) {
-                window.eventSystem.showNotification(`Bem-vindo, ${profileName}!`, 'success');
-            }
-            
-            // Ir para menu principal
-            setTimeout(() => {
-                window.eventSystem.showScreen('main-menu');
-            }, 500);
-        } else {
-            this.showError(`Não foi possível selecionar o perfil "${profileName}"`);
-        }
+  }
+
+  stopBackgroundSlideshow() {
+    if (this.bgTimer) {
+      clearInterval(this.bgTimer);
+      this.bgTimer = null;
     }
-    
-    deleteProfile(profileName) {
-        if (!confirm(`Tem certeza que deseja excluir o perfil "${profileName}"?\nEsta ação não pode ser desfeita.`)) {
-            return;
-        }
-        
-        if (!window.profileManager) {
-            this.showError('Sistema de perfis não disponível');
-            return;
-        }
-        
-        // Encontrar e remover perfil
-        const index = this.profiles.findIndex(p => p.name === profileName);
-        if (index === -1) {
-            this.showError('Perfil não encontrado');
-            return;
-        }
-        
-        // Remover do array
-        this.profiles.splice(index, 1);
-        
-        // Atualizar localStorage
-        try {
-            localStorage.setItem('streetrod2_profiles', JSON.stringify(this.profiles));
-            
-            // Se era o perfil atual, limpar
-            const currentProfile = window.profileManager.getCurrentProfile();
-            if (currentProfile && currentProfile.name === profileName) {
-                localStorage.removeItem('streetrod2_current_profile');
-                window.currentProfile = null;
-            }
-            
-            console.log(`🗑️ Perfil "${profileName}" excluído`);
-            
-            if (window.eventSystem && window.eventSystem.showNotification) {
-                window.eventSystem.showNotification(`Perfil "${profileName}" excluído`, 'success');
-            }
-            
-            // Recarregar lista
-            this.loadProfiles();
-            
-        } catch (error) {
-            console.error('❌ Erro ao excluir perfil:', error);
-            this.showError('Erro ao excluir perfil');
-        }
-    }
-    
-    createNewProfile() {
-        console.log('➕ Criando novo perfil...');
-        
-        // Limpar container antes de navegar para garantir layout correto
-        const container = document.getElementById('game-container');
-        if (container) {
-            container.innerHTML = '';
-            container.style.cssText = '';
-        }
-        
-        if (window.eventSystem && window.eventSystem.showScreen) {
-            window.eventSystem.showScreen('profile-creation');
-        } else if (window.profileCreationScreen) {
-            window.profileCreationScreen.initialize();
-        } else {
-            this.showError('Sistema de criação de perfis não disponível');
-        }
-    }
-    
-    showImportExport() {
-        alert('Funcionalidade de importação/exportação em desenvolvimento!');
-        // Em produção, aqui você implementaria a lógica de import/export
-    }
-    
-    showError(message) {
-        console.error('❌ Erro:', message);
-        alert(`Erro: ${message}`);
-    }
-    
-    cleanup() {
-        console.log('🧹 Limpando ProfileSelectionScreen');
-    }
+  }
+
+  startBackgroundSlideshow() {
+    this.stopBackgroundSlideshow();
+    this.bgTimer = setInterval(() => {
+      const next = Math.floor(Math.random() * this.backgrounds.length);
+      this.transitionBackground(next);
+    }, 8000);
+  }
+
+  transitionBackground(nextIndex) {
+    const currentLayer = document.querySelector(
+      "#ps-container .ps-bg-layer.current",
+    );
+    const nextLayer = document.querySelector(
+      "#ps-container .ps-bg-layer.next-ready",
+    );
+    if (!currentLayer || !nextLayer) return;
+
+    const imgUrl = this.backgrounds[nextIndex] || this.fallbackBg;
+    const img = new Image();
+    img.onload = () => {
+      nextLayer.style.backgroundImage = `url('${imgUrl}')`;
+      nextLayer.style.opacity = "1";
+      nextLayer.style.zIndex = "2";
+      currentLayer.style.zIndex = "1";
+      setTimeout(() => {
+        currentLayer.classList.remove("current");
+        currentLayer.classList.add("next-ready");
+        currentLayer.style.opacity = "0";
+        currentLayer.style.zIndex = "0";
+        nextLayer.classList.remove("next-ready");
+        nextLayer.classList.add("current");
+      }, 1500);
+    };
+    img.src = imgUrl; // Load
+  }
+
+  attachEvents() {
+    document.getElementById("ps-back-btn").onclick = () =>
+      window.eventSystem.showScreen("main-menu");
+    const createBtn = document.getElementById("sb-create-btn");
+    if (createBtn) createBtn.onclick = () => this.createNewProfile();
+    const refreshBtn = document.getElementById("sb-refresh-btn");
+    if (refreshBtn) refreshBtn.onclick = () => this.loadProfiles();
+  }
 }
 
-// Exportar
-if (typeof window !== 'undefined') {
-    window.profileSelectionScreen = new ProfileSelectionScreen();
-    window.ProfileSelectionScreen = ProfileSelectionScreen;
-    console.log('✅ ProfileSelectionScreen exportado para window');
+if (typeof window !== "undefined") {
+  window.profileSelectionScreen = new ProfileSelectionScreen();
+  window.ProfileSelectionScreen = ProfileSelectionScreen;
 }
