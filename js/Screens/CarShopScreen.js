@@ -21,6 +21,9 @@ class CarShopScreen {
         desc: "Zero km. Clássico confiável.",
         icon: "🐞",
         color: "#f1c40f",
+        vehicleType: "classic",
+        engineType: "inline4",
+        driveType: "rwd",
       },
       {
         id: "car_beetle_used",
@@ -33,6 +36,9 @@ class CarShopScreen {
         desc: "Precisa de amor e graxa.",
         icon: "🐞",
         color: "#95a5a6",
+        vehicleType: "classic",
+        engineType: "inline4",
+        driveType: "rwd",
       },
       // MUSCLE
       {
@@ -46,6 +52,9 @@ class CarShopScreen {
         desc: "O monstro de 6 cilindros.",
         icon: "🦁",
         color: "#e74c3c",
+        vehicleType: "muscle",
+        engineType: "inline6",
+        driveType: "rwd",
       },
       {
         id: "car_opala_used",
@@ -58,6 +67,9 @@ class CarShopScreen {
         desc: "Motor fumando um pouco.",
         icon: "🦁",
         color: "#7f8c8d",
+        vehicleType: "muscle",
+        engineType: "inline6",
+        driveType: "rwd",
       },
       // V8
       {
@@ -71,6 +83,9 @@ class CarShopScreen {
         desc: "V8 302. Torque bruto.",
         icon: "🐴",
         color: "#e67e22",
+        vehicleType: "muscle",
+        engineType: "v8",
+        driveType: "rwd",
       },
       // RELIC
       {
@@ -84,6 +99,9 @@ class CarShopScreen {
         desc: "Lenda das pistas.",
         icon: "🔥",
         color: "#8e44ad",
+        vehicleType: "hotrod",
+        engineType: "v8",
+        driveType: "rwd",
       },
     ];
 

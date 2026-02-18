@@ -18,6 +18,10 @@ class ShopScreen {
           slot: "carburetor",
           desc: "Melhora o fluxo de ar básico.",
           icon: "🔧",
+          compatibleWith: {
+            engineTypes: ["v8", "v6", "inline6"],
+            yearRange: [1960, 1985],
+          },
         },
         {
           id: "eng_carb_2",
@@ -27,6 +31,10 @@ class ShopScreen {
           slot: "carburetor",
           desc: "Dobro de entrada, dobro de resposta.",
           icon: "🔧",
+          compatibleWith: {
+            engineTypes: ["v8", "inline6"],
+            yearRange: [1965, 1985],
+          },
         },
         {
           id: "eng_intake",
@@ -36,6 +44,7 @@ class ShopScreen {
           slot: "intake",
           desc: "Filtro de alto fluxo.",
           icon: "💨",
+          // Universal - funciona em qualquer motor
         },
         {
           id: "eng_pistons",
@@ -45,6 +54,10 @@ class ShopScreen {
           slot: "pistons",
           desc: "Aguenta mais compressão.",
           icon: "⚙️",
+          compatibleWith: {
+            vehicleTypes: ["muscle", "hotrod"],
+            engineTypes: ["v8", "inline6"],
+          },
         },
       ],
       transmission: [
@@ -53,16 +66,22 @@ class ShopScreen {
           name: "Câmbio 4 Marchas",
           price: 500,
           acc: 5,
+          slot: "transmission",
           desc: "Relações curtas para arrancada.",
           icon: "🕹️",
+          // Universal - funciona em qualquer carro
         },
         {
           id: "trans_diff",
           name: "Diferencial Blocante",
           price: 800,
           acc: 10,
+          slot: "differential",
           desc: "Tração máxima nas duas rodas.",
           icon: "⛓️",
+          compatibleWith: {
+            driveTypes: ["rwd"], // Apenas tração traseira
+          },
         },
       ],
       tires: [
@@ -71,24 +90,33 @@ class ShopScreen {
           name: "Pneus Radiais",
           price: 200,
           grip: 5,
+          slot: "tires",
           desc: "Borracha nova para o dia a dia.",
           icon: "🔘",
+          // Universal
         },
         {
           id: "tire_sport",
           name: "Pneus Esportivos",
           price: 600,
           grip: 15,
+          slot: "tires",
           desc: "Composto macio para curvas.",
           icon: "🔘",
+          // Universal
         },
         {
           id: "tire_slick",
           name: "Slicks de Arrancada",
           price: 1000,
           grip: 30,
+          slot: "tires",
           desc: "Aderência total no asfalto seco.",
           icon: "🔥",
+          compatibleWith: {
+            vehicleTypes: ["muscle", "hotrod"],
+            driveTypes: ["rwd"],
+          },
         },
       ],
     };

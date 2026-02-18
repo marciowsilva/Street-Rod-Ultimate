@@ -249,6 +249,36 @@ class TuningScreen {
                     background: rgba(46, 213, 115, 0.1);
                 }
 
+                .part-card.incompatible {
+                    opacity: 0.6;
+                    border-color: #ff4757;
+                }
+
+                .part-card.incompatible:hover {
+                    border-color: #ff4757;
+                    box-shadow: 0 10px 30px rgba(255,71,87,0.3);
+                }
+
+                .installed-badge, .incompatible-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: #2ed573;
+                    color: #000;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    z-index: 2;
+                }
+
+                .incompatible-badge {
+                    background: #ff4757;
+                    color: #fff;
+                }
+
                 .part-icon {
                     font-size: 4rem;
                     align-self: center;
@@ -273,7 +303,7 @@ class TuningScreen {
                     color: #2ed573;
                 }
 
-                .install-btn {
+                .part-install-btn {
                     background: #2ed573;
                     color: #000;
                     border: none;
@@ -288,15 +318,20 @@ class TuningScreen {
                     margin-top: auto;
                 }
 
-                .install-btn:hover {
+                .part-install-btn:hover {
                     background: #fff;
                     box-shadow: 0 0 15px #2ed573;
                 }
-                .install-btn:active { transform: scale(0.95); }
-                .install-btn:disabled {
+                .part-install-btn:active { transform: scale(0.95); }
+                .part-install-btn:disabled, .part-install-btn.disabled {
                     background: #555;
                     color: #999;
                     cursor: not-allowed;
+                    opacity: 0.7;
+                }
+                .part-install-btn:disabled:hover, .part-install-btn.disabled:hover {
+                    background: #555;
+                    box-shadow: none;
                 }
 
                 .installed-badge {
@@ -399,18 +434,24 @@ class TuningScreen {
 
     inventory.forEach((part, index) => {
       const isInstalled = this.isPartInstalled(part);
+      const isCompatible = this.isPartCompatible(part, this.currentVehicle);
+      const incompatibilityReason = !isCompatible
+        ? this.getIncompatibilityReason(part, this.currentVehicle)
+        : "";
 
       const card = document.createElement("div");
-      card.className = `part-card ${isInstalled ? "installed" : ""}`;
+      card.className = `part-card ${isInstalled ? "installed" : ""} ${!isCompatible ? "incompatible" : ""}`;
 
       card.innerHTML = `
                 ${isInstalled ? '<div class="installed-badge">INSTALADA</div>' : ""}
+                ${!isCompatible && !isInstalled ? '<div class="incompatible-badge">INCOMPATÍVEL</div>' : ""}
                 
                 <div class="part-icon">${part.icon || "⚙️"}</div>
                 
                 <div class="part-info">
                     <h3>${part.name}</h3>
-                    <p>${part.description || "Peça de performance"}</p>
+                    <p>${part.description || part.desc || "Peça de performance"}</p>
+                    ${!isCompatible ? `<p style="color: #ff4757; font-size: 0.85rem; margin-top: 5px;">⚠️ ${incompatibilityReason}</p>` : ""}
                 </div>
 
                 <div class="part-stats">
@@ -418,13 +459,141 @@ class TuningScreen {
                     ${part.speedBonus ? `<div class="part-stat"><span>Velocidade:</span><span>+${part.speedBonus} km/h</span></div>` : ""}
                 </div>
 
-                <button class="install-btn" ${isInstalled ? "disabled" : ""} onclick="window.tuningScreen.installPart(${index})">
-                    ${isInstalled ? "JÁ INSTALADA" : "INSTALAR"}
+                <button 
+                    class="part-install-btn ${isInstalled || !isCompatible ? "disabled" : ""}" 
+                    ${isInstalled || !isCompatible ? "disabled" : ""}
+                    onclick="window.tuningScreen.installPart(${index})"
+                >
+                    ${isInstalled ? "JÁ INSTALADA" : !isCompatible ? "INCOMPATÍVEL" : "INSTALAR"}
                 </button>
             `;
 
       grid.appendChild(card);
     });
+  }
+
+  isPartCompatible(part, vehicle) {
+    console.log(
+      `🔍 Verificando compatibilidade: ${part.name} em ${vehicle.name}`,
+    );
+
+    // Se a peça não tem restrições, é universal
+    if (!part.compatibleWith) {
+      console.log("✅ Peça universal - compatível");
+      return true;
+    }
+
+    const compat = part.compatibleWith;
+
+    // Verificar tipo de veículo
+    if (
+      compat.vehicleTypes &&
+      !compat.vehicleTypes.includes(vehicle.vehicleType)
+    ) {
+      console.log(
+        `❌ Incompatível: vehicleType ${vehicle.vehicleType} não está em ${compat.vehicleTypes}`,
+      );
+      return false;
+    }
+
+    // Verificar tipo de motor
+    if (
+      compat.engineTypes &&
+      !compat.engineTypes.includes(vehicle.engineType)
+    ) {
+      console.log(
+        `❌ Incompatível: engineType ${vehicle.engineType} não está em ${compat.engineTypes}`,
+      );
+      return false;
+    }
+
+    // Verificar tipo de tração
+    if (compat.driveTypes && !compat.driveTypes.includes(vehicle.driveType)) {
+      console.log(
+        `❌ Incompatível: driveType ${vehicle.driveType} não está em ${compat.driveTypes}`,
+      );
+      return false;
+    }
+
+    // Verificar faixa de anos
+    if (compat.yearRange) {
+      const [minYear, maxYear] = compat.yearRange;
+      if (vehicle.year < minYear || vehicle.year > maxYear) {
+        console.log(
+          `❌ Incompatível: ano ${vehicle.year} fora da faixa ${minYear}-${maxYear}`,
+        );
+        return false;
+      }
+    }
+
+    // Verificar lista específica de veículos
+    if (
+      compat.specificVehicles &&
+      !compat.specificVehicles.includes(vehicle.id)
+    ) {
+      console.log(
+        `❌ Incompatível: veículo ${vehicle.id} não está na lista específica`,
+      );
+      return false;
+    }
+
+    console.log("✅ Peça compatível!");
+    return true;
+  }
+
+  getIncompatibilityReason(part, vehicle) {
+    if (!part.compatibleWith) {
+      return "";
+    }
+
+    const compat = part.compatibleWith;
+    const reasons = [];
+
+    if (
+      compat.vehicleTypes &&
+      !compat.vehicleTypes.includes(vehicle.vehicleType)
+    ) {
+      const types = compat.vehicleTypes
+        .map((t) => {
+          const names = {
+            muscle: "Muscle Cars",
+            classic: "Clássicos",
+            hotrod: "Hot Rods",
+            sport: "Esportivos",
+            import: "Importados",
+          };
+          return names[t] || t;
+        })
+        .join(", ");
+      reasons.push(`Requer: ${types}`);
+    }
+
+    if (
+      compat.engineTypes &&
+      !compat.engineTypes.includes(vehicle.engineType)
+    ) {
+      const types = compat.engineTypes.map((t) => t.toUpperCase()).join(" ou ");
+      reasons.push(`Motor: ${types}`);
+    }
+
+    if (compat.driveTypes && !compat.driveTypes.includes(vehicle.driveType)) {
+      const types = compat.driveTypes
+        .map((t) => {
+          const names = { rwd: "Traseira", fwd: "Dianteira", awd: "4x4" };
+          return names[t] || t;
+        })
+        .join(" ou ");
+      reasons.push(`Tração: ${types}`);
+    }
+
+    if (compat.yearRange) {
+      const [minYear, maxYear] = compat.yearRange;
+      if (vehicle.year < minYear || vehicle.year > maxYear) {
+        reasons.push(`Anos ${minYear}-${maxYear}`);
+      }
+    }
+
+    return reasons.length > 0 ? reasons.join(" • ") : "Não compatível";
   }
 
   isPartInstalled(part) {
@@ -446,6 +615,15 @@ class TuningScreen {
 
     if (this.isPartInstalled(part)) {
       alert("Esta peça já está instalada!");
+      return;
+    }
+
+    // Verificar compatibilidade ANTES de confirmar instalação
+    if (!this.isPartCompatible(part, this.currentVehicle)) {
+      const reason = this.getIncompatibilityReason(part, this.currentVehicle);
+      alert(
+        `❌ Peça Incompatível!\n\n${part.name} não pode ser instalada em ${this.currentVehicle.name}.\n\n${reason}`,
+      );
       return;
     }
 
