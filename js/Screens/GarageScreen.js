@@ -1,4 +1,4 @@
-// GarageScreen.js - GARAGEM DO JOGADOR (Layout Padronizado)
+// GarageScreen.js - LOJA DE PEÇAS / GARAGEM DO JOGADOR (Evolução v1.2)
 console.log("🏠 Carregando GarageScreen...");
 
 class GarageScreen {
@@ -8,7 +8,8 @@ class GarageScreen {
     this.isActive = false;
 
     // Estado local
-    this.currentFilter = "all"; // all, favorites
+    this.currentFilter = "all"; // all, fav
+    this.currentSort = "newest"; // newest, power, value
     this.selectedCarIndex = -1;
     this.sidebarMode = "filter"; // 'filter' or 'details'
   }
@@ -19,10 +20,7 @@ class GarageScreen {
 
     // Forçar reload do perfil para garantir dados atualizados
     if (window.profileManager) {
-      // Recarregar perfis do localStorage
       window.profileManager.profiles = window.profileManager.loadProfiles();
-
-      // Pegar perfil atual atualizado
       const currentProfileName = localStorage.getItem(
         window.profileManager.currentProfileKey,
       );
@@ -44,20 +42,10 @@ class GarageScreen {
     console.log("🏠 Escondendo GarageScreen");
     this.isActive = false;
     const container = document.getElementById("garage-container");
-    if (container) {
-      console.log("🗑️ Removendo garage-container");
-      container.remove();
-    }
-
-    const style = document.getElementById("garage-styles");
-    if (style) {
-      console.log("🗑️ Removendo garage-styles");
-      style.remove();
-    }
+    if (container) container.remove();
   }
 
   cleanup() {
-    console.log("🧹 Limpando GarageScreen (cleanup)");
     this.hide();
   }
 
@@ -65,32 +53,68 @@ class GarageScreen {
     if (window.profileManager) {
       this.profile = window.profileManager.getCurrentProfile();
     }
-    // Garantir array de veículos
     if (!this.profile) this.profile = { vehicles: [], cash: 0 };
     if (!this.profile.vehicles) this.profile.vehicles = [];
+
+    // Garantir propriedades base
+    this.profile.vehicles.forEach((car) => {
+      if (typeof car.isFavorite === "undefined") car.isFavorite = false;
+      if (typeof car.integrity === "undefined") car.integrity = 100;
+    });
+  }
+
+  saveProfile() {
+    if (window.profileManager) window.profileManager.saveProfile(this.profile);
+  }
+
+  calculateCarValue(car) {
+    let base = car.price || 5000;
+    let partsValue = 0;
+    if (car.installedParts) {
+      Object.values(car.installedParts).forEach((partId) => {
+        partsValue += 1000; // Estimativa
+      });
+    }
+    let total = base + partsValue;
+    const integrity = car.integrity !== undefined ? car.integrity : 100;
+    const conditionMultiplier = 0.5 + (integrity / 100) * 0.5;
+    return Math.floor(total * 0.7 * conditionMultiplier);
+  }
+
+  getProcessedVehicles() {
+    let list = this.profile.vehicles.map((car, index) => ({
+      car,
+      originalIndex: index,
+    }));
+
+    // Filtro
+    if (this.currentFilter === "fav") {
+      list = list.filter((item) => item.car.isFavorite);
+    }
+
+    // Ordenação
+    list.sort((a, b) => {
+      if (this.currentSort === "power") {
+        return (b.car.power || 0) - (a.car.power || 0);
+      } else if (this.currentSort === "value") {
+        return this.calculateCarValue(b.car) - this.calculateCarValue(a.car);
+      }
+      return b.originalIndex - a.originalIndex;
+    });
+
+    return list;
   }
 
   render() {
     console.log("🏠 Renderizando GarageScreen");
 
-    // Garantir que não há containers antigos
     const oldContainer = document.getElementById("garage-container");
-    if (oldContainer) {
-      console.log("🗑️ Removendo garage-container antigo antes de renderizar");
-      oldContainer.remove();
-    }
-
-    const oldStyle = document.getElementById("garage-styles");
-    if (oldStyle) {
-      console.log("🗑️ Removendo garage-styles antigo antes de renderizar");
-      oldStyle.remove();
-    }
+    if (oldContainer) oldContainer.remove();
 
     const container = document.createElement("div");
     container.id = "garage-container";
     container.className = "ps-root";
 
-    // Background diferente para garagem (Interior mecânica/escuro)
     const bgUrl = "./assets/images/backgrounds/bg-5.jpg";
 
     container.innerHTML = `
@@ -101,22 +125,21 @@ class GarageScreen {
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: url('${bgUrl}') no-repeat center center fixed; /* Fixed BG */
+                    background: url('${bgUrl}') no-repeat center center fixed;
                     background-size: cover;
                     font-family: 'Rajdhani', sans-serif;
                     color: white;
                     z-index: 100;
                     display: flex;
                     flex-direction: column;
-                    overflow-y: auto; /* Scroll Global */
+                    overflow-y: auto;
                 }
                 
-                /* Overlay Escuro (Base Padrão) */
                 .gr-overlay {
-                    position: fixed; /* Fixed Overlay */
+                    position: fixed;
                     inset: 0;
-                    background: rgba(10, 10, 20, 0.85); /* Exato da ShopScreen */
-                    backdrop-filter: blur(8px); /* Exato da ShopScreen */
+                    background: rgba(10, 10, 20, 0.85);
+                    backdrop-filter: blur(8px);
                     z-index: 1;
                 }
 
@@ -144,12 +167,11 @@ class GarageScreen {
                     display: flex;
                     flex-direction: column;
                     padding: 30px;
-                    max-width: 1200px; /* Exato da ShopScreen (era 1400px) */
+                    max-width: 1200px;
                     margin: 0 auto;
                     width: 100%;
                 }
 
-                /* Header Padronizado */
                 .gr-header {
                     display: flex;
                     justify-content: space-between;
@@ -160,21 +182,20 @@ class GarageScreen {
                 }
 
                 .gr-title { margin-left: 100px; }
-
                 .gr-title h1 {
                     font-size: 3rem;
                     margin: 0;
                     color: #fff;
-                    text-shadow: 0 0 20px rgba(52, 152, 219, 0.5); /* Azul Garage */
+                    text-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
                     letter-spacing: 5px;
                 }
                 .gr-title span { color: #3498db; }
 
                 .gr-count {
-                    font-size: 1rem; /* Exato da ShopScreen (era 1.2rem) */
-                    color: #888; /* Cor mais suave */
+                    font-size: 1rem;
+                    color: #888;
                     letter-spacing: 2px;
-                    margin-top: 0; /* Remover margin extra se houver diferença de altura de linha */
+                    margin-top: 0;
                 }
 
                 .gr-wallet {
@@ -188,22 +209,19 @@ class GarageScreen {
                     border: 1px solid rgba(46, 204, 113, 0.3);
                 }
 
-                /* Layout Principal */
                 .gr-main {
                     display: flex;
                     gap: 30px;
                     flex: 1;
-                    /* overflow removido */
-                    align-items: flex-start; /* Necessário para sticky */
+                    align-items: flex-start;
                 }
 
-                /* Sidebar */
                 .gr-sidebar {
                     width: 250px;
                     display: flex;
                     flex-direction: column;
                     gap: 15px;
-                    position: sticky; /* FIXO AO ROLAR */
+                    position: sticky;
                     top: 20px;
                     height: fit-content;
                     z-index: 10;
@@ -224,13 +242,7 @@ class GarageScreen {
                     text-transform: uppercase;
                     letter-spacing: 1px;
                 }
-
-                .gr-filter-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                    padding-left: 25px;
-                }
-
+                .gr-filter-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; padding-left: 25px; }
                 .gr-filter-btn.active {
                     background: rgba(52, 152, 219, 0.15);
                     border-color: #3498db;
@@ -238,25 +250,32 @@ class GarageScreen {
                     box-shadow: 0 0 20px rgba(52, 152, 219, 0.1);
                 }
 
-                /* Grid */
-                .gr-grid {
+                .gr-grid-container {
                     flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .gr-toolbar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px 20px;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                }
+
+                .gr-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                     grid-auto-rows: max-content;
                     gap: 20px;
-                    /* Scroll interno removido */
-                    padding: 20px;
-                    padding-right: 10px;
                 }
 
-                .gr-grid::-webkit-scrollbar { width: 6px; }
-                .gr-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-                .gr-grid::-webkit-scrollbar-thumb { background: #3498db; border-radius: 3px; }
-
-                /* Card Veículo (Base Padrão) */
                 .gr-card {
-                    background: rgba(20, 20, 30, 0.6); /* Exato da ShopScreen */
+                    background: rgba(20, 20, 30, 0.6);
                     border: 1px solid rgba(255, 255, 255, 0.08);
                     border-radius: 12px;
                     padding: 20px;
@@ -266,133 +285,65 @@ class GarageScreen {
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
                     position: relative;
                     overflow: hidden;
+                    cursor: pointer;
                 }
-
                 .gr-card:hover {
                     transform: translateY(-5px);
-                    background: rgba(20, 20, 30, 0.8); /* Exato da ShopScreen */
-                    border-color: rgba(52, 152, 219, 0.5); /* Azul Accent */
+                    background: rgba(20, 20, 30, 0.8);
+                    border-color: rgba(52, 152, 219, 0.5);
                     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
                 }
-
-                /* Layout horizontal para data de compra e ID */
-                .gr-meta {
-                    display: flex;
-                    justify-content: space-between;
-                    font-size: 0.75rem;
-                    color: #666;
-                    border-bottom: 1px solid rgba(255,255,255,0.05);
-                    padding-bottom: 10px;
-                    margin-bottom: 5px;
-                }
-
-                .gr-icon {
-                    font-size: 4rem;
-                    align-self: center;
-                    filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.2));
-                    margin: 10px 0;
-                }
-
-                .gr-info h3 { margin: 0; font-size: 1.4rem; color: #fff; }
-                .gr-info p { margin: 5px 0 0; font-size: 0.9rem; color: #888; }
-                
-                .gr-stats {
-                    display: flex;
-                    gap: 10px;
-                    font-size: 0.85rem;
-                }
-
-                .gr-stat-tag {
-                    color: #3498db;
+                .gr-card.active {
+                    border-color: #3498db;
                     background: rgba(52, 152, 219, 0.1);
-                    padding: 4px 8px;
-                    border-radius: 4px;
+                    box-shadow: 0 0 20px rgba(52, 152, 219, 0.2);
                 }
 
-                .gr-actions {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 10px;
-                    margin-top: auto;
-                }
-
-                .gr-btn {
-                    border: none;
-                    padding: 10px;
-                    font-family: inherit;
-                    font-weight: 700;
-                    cursor: pointer;
-                    border-radius: 6px;
-                    text-transform: uppercase;
-                    font-size: 0.9rem;
-                    transition: all 0.2s;
-                }
-
-                .btn-drive {
-                    background: #3498db;
-                    color: white;
-                    grid-column: span 2;
-                }
-                .btn-drive:hover { background: #2980b9; box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); }
-
-                .btn-sell {
-                    background: rgba(231, 76, 60, 0.1);
-                    color: #e74c3c;
-                    border: 1px solid rgba(231, 76, 60, 0.3);
-                }
-                .btn-sell:hover { background: #e74c3c; color: white; }
-
-                .btn-tune {
-                    background: rgba(46, 213, 115, 0.1);
-                    color: #2ed573;
-                    border: 1px solid rgba(46, 213, 115, 0.3);
-                }
-                .btn-tune:hover { background: #2ed573; color: black; }
+                .gr-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 5px; padding-right: 30px; }
+                .gr-icon { font-size: 4rem; align-self: center; filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.2)); margin: 10px 0; }
+                .gr-info h3 { margin: 0; font-size: 1.4rem; color: #fff; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; }
+                
+                .gr-inline-stats { display:flex; gap:10px; margin-top:10px; }
+                .gr-inline-stat-col { flex:1; }
+                .gr-inline-stat-lbl { font-size:0.7rem; color:#666; font-weight:bold; }
+                .gr-inline-bar-bg { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:2px; }
+                
+                .gr-fav-btn { position:absolute; top:15px; right:15px; font-size:1.2rem; background:none; border:none; cursor:pointer; opacity:0.5; transition:0.2s; color:#fff; }
+                .gr-fav-btn:hover { opacity:1; transform:scale(1.1); }
+                .gr-fav-btn.active { color:#f1c40f; opacity:1; text-shadow:0 0 10px rgba(241,196,15,0.5); }
 
                 /* Sidebar Detalhes */
-                .gr-details-sidebar {
-                    display: flex; flex-direction: column; gap: 20px;
-                    animation: fadeSide 0.3s;
-                }
+                .gr-details-sidebar { display: flex; flex-direction: column; gap: 20px; animation: fadeSide 0.3s; }
                 @keyframes fadeSide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-                .gr-detail-header { text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+                .gr-detail-header { text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; position:relative; }
                 .gr-detail-icon { font-size: 5rem; filter: drop-shadow(0 0 20px rgba(52,152,219,0.4)); transition: transform 0.3s; }
                 .gr-detail-icon:hover { transform: scale(1.1) rotate(5deg); }
-                
                 .gr-detail-title { font-size: 1.5rem; color: white; margin: 10px 0 5px; text-transform: uppercase; letter-spacing: 1px; }
                 .gr-detail-meta { color: #888; font-size: 0.8rem; display: flex; justify-content: center; gap: 15px; }
 
-                .gr-stat-group { display: flex; flex-direction: column; gap: 8px; }
-                .gr-stat-item { display: flex; flex-direction: column; gap: 4px; }
-                .gr-stat-label { display: flex; justify-content: space-between; color: #aaa; font-size: 0.75rem; font-weight: 700; }
-                .gr-stat-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
-                .gr-stat-bar-fill { height: 100%; background: #3498db; width: 0%; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 3px; }
-                .gr-stat-bar-fill.danger { background: #e74c3c; }
-                .gr-stat-bar-fill.warning { background: #f1c40f; }
+                .gr-stat-group { display: flex; flex-direction: column; gap: 8px; background:rgba(255,255,255,0.03); padding:15px; border-radius:8px; }
+                .gr-stat-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+                .gr-stat-label { display: flex; justify-content: space-between; color: #aaa; font-size: 0.8rem; font-weight: 700; }
+                .gr-stat-bar-bg { height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; }
+                .gr-stat-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 3px; }
 
-                .gr-parts-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-                .gr-label-sec { font-size: 0.8rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-                
-                .gr-part-item { 
-                    display: flex; align-items: center; gap: 12px; 
-                    background: rgba(255,255,255,0.03); 
-                    padding: 10px; border-radius: 8px; 
-                    border: 1px solid rgba(255,255,255,0.05);
-                }
-                .gr-part-icon { font-size: 1.2rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; }
-                .gr-part-info { display: flex; flex-direction: column; }
-                .gr-part-name { color: #ddd; font-size: 0.9rem; font-weight: 600; }
-                .gr-part-level { color: #3498db; font-size: 0.7rem; }
+                .gr-actions { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+                .gr-btn { border: none; padding: 12px; font-family: inherit; font-weight: 700; cursor: pointer; border-radius: 6px; text-transform: uppercase; font-size: 0.9rem; transition: all 0.2s; text-align:center; }
+                .btn-tune { background: #3498db; color: white; box-shadow: 0 5px 15px rgba(52,152,219,0.3); }
+                .btn-tune:hover { background: #2980b9; transform: translateY(-2px); }
+                .btn-drive { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+                .btn-drive:hover { background: rgba(255,255,255,0.2); border-color: white; }
+                .btn-sell { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+                .btn-sell:hover { background: #e74c3c; color: white; }
 
-                /* Botão Voltar Sidebar */
-                .gr-back-filter {
-                    background: transparent; border: 1px solid rgba(255,255,255,0.2);
-                    color: #aaa; padding: 8px; border-radius: 6px; cursor: pointer;
-                    margin-bottom: 10px; font-size: 0.8rem; transition: 0.3s;
-                }
+                .gr-back-filter { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 8px; border-radius: 6px; cursor: pointer; margin-bottom: 10px; font-size: 0.8rem; transition: 0.3s; }
                 .gr-back-filter:hover { border-color: white; color: white; background: rgba(255,255,255,0.05); }
 
+                .gr-repair-box { margin-top:10px; padding:15px; background:rgba(231,76,60,0.1); border:1px solid rgba(231,76,60,0.3); border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
+
+                /* Photo Mode Overlay */
+                #gr-photo-mode { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.95); backdrop-filter:blur(10px); justify-content:center; align-items:center; flex-direction:column; }
             </style>
 
             <div class="gr-overlay"></div>
@@ -403,7 +354,7 @@ class GarageScreen {
                 <div class="gr-header">
                     <div class="gr-title">
                         <h1>MINHA <span style="color: #3498db;">GARAGEM</span></h1>
-                        <div class="gr-count">${this.profile.vehicles.length} VEÍCULOS NA COLEÇÃO</div>
+                        <div class="gr-count" id="gr-count-label">${this.profile.vehicles.length} VEÍCULOS NA COLEÇÃO</div>
                     </div>
                     
                     <div class="gr-wallet">
@@ -417,37 +368,72 @@ class GarageScreen {
                         <!-- Renderizado via renderSidebar() -->
                     </div>
 
-                    <!-- Grid -->
-                    <div class="gr-grid" id="gr-grid">
-                        <!-- Items rendered via JS -->
+                    <!-- Grid & Toolbar -->
+                    <div class="gr-grid-container">
+                        <div class="gr-toolbar">
+                            <div style="color:#aaa; font-size:0.9rem;">EXIBIÇÃO COM BASE NOS FILTROS</div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <span style="color:#666; font-size:0.8rem; font-weight:bold;">ORDENAR POR:</span>
+                                <select id="gr-sort-select" style="background:#111; color:#fff; border:1px solid #444; padding:5px 10px; border-radius:4px; cursor:pointer; font-family:inherit;">
+                                    <option value="newest" ${this.currentSort === "newest" ? "selected" : ""}>Aquisição (Mais Novos)</option>
+                                    <option value="power" ${this.currentSort === "power" ? "selected" : ""}>Potência (Maior-Menor)</option>
+                                    <option value="value" ${this.currentSort === "value" ? "selected" : ""}>Valor (Maior-Menor)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="gr-grid" id="gr-grid">
+                            <!-- Items rendered via JS -->
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- FOTO MODO OVERLAY -->
+            <div id="gr-photo-mode">
+                <button style="position:absolute; top:30px; right:30px; font-size:2rem; background:none; border:none; color:#fff; cursor:pointer;" onclick="document.getElementById('gr-photo-mode').style.display='none'">&times;</button>
+                <div id="gr-pm-icon" style="font-size:15rem; filter:drop-shadow(0 0 50px rgba(52,152,219,0.5)); transition:transform 0.5s;">🚗</div>
+                <h2 id="gr-pm-title" style="font-size:3rem; margin:10px 0 0; letter-spacing:3px; color:#fff;">-</h2>
+                <div id="gr-pm-subtitle" style="color:#3498db; font-size:1.2rem; letter-spacing:1px; margin-bottom:30px;">-</div>
+                
+                <div id="gr-pm-parts" style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; max-width:800px;">
+                    <!-- Peças injetadas aqui -->
                 </div>
             </div>
         `;
 
     document.getElementById("game-container").appendChild(container);
-    this.renderSidebar(); // Initial Render
+
+    document
+      .getElementById("gr-sort-select")
+      .addEventListener("change", (e) => {
+        this.currentSort = e.target.value;
+        this.renderVehicles();
+      });
+
+    this.renderSidebar();
     this.renderVehicles();
   }
 
-  // --- SIDEBAR LOGIC ---
   renderSidebar() {
     const sidebar = document.getElementById("gr-sidebar");
     if (!sidebar) return;
 
     if (this.sidebarMode === "filter") {
-      // MODO FILTRO (Padrão)
       sidebar.innerHTML = `
-            <button class="gr-filter-btn ${this.currentFilter === "all" ? "active" : ""}" onclick="window.garageScreen.setFilter('all')">TODOS</button>
-            <button class="gr-filter-btn ${this.currentFilter === "fav" ? "active" : ""}" onclick="alert('Feature em breve!')">FAVORITOS</button>
+            <button class="gr-filter-btn ${this.currentFilter === "all" ? "active" : ""}" id="gr-filter-all">🚗 TODOS OS VEÍCULOS</button>
+            <button class="gr-filter-btn ${this.currentFilter === "fav" ? "active" : ""}" id="gr-filter-fav">⭐ FAVORITOS</button>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border: 1px solid rgba(52, 152, 219, 0.2);">
                 <div style="font-size: 0.8rem; color: #3498db; font-weight: 700; margin-bottom: 5px;">DICA RÁPIDA</div>
-                <div style="font-size: 0.85rem; color: #ccc; line-height: 1.4;">Clique em um veículo para ver os detalhes técnicos e peças instaladas.</div>
+                <div style="font-size: 0.85rem; color: #ccc; line-height: 1.4;">Clique em um veículo para ver os detalhes técnicos, realizar consertos ou acessar a oficina.</div>
             </div>
-        `;
+      `;
+      document.getElementById("gr-filter-all").onclick = () =>
+        this.setFilter("all");
+      document.getElementById("gr-filter-fav").onclick = () =>
+        this.setFilter("fav");
     } else if (this.sidebarMode === "details") {
-      // MODO DETALHES (Veículo Selecionado)
       const car = this.profile.vehicles[this.selectedCarIndex];
       if (!car) {
         this.sidebarMode = "filter";
@@ -455,254 +441,299 @@ class GarageScreen {
         return;
       }
 
-      // Calcular porcentagens para barras
-      const intPct = car.integrity || 100;
-      const pwrPct = Math.min((car.power / 500) * 100, 100); // 500hp max ref
+      const intPct = car.integrity !== undefined ? car.integrity : 100;
+      const pwrPct = Math.min(((car.power || 100) / 700) * 100, 100);
+      const sellVal = this.calculateCarValue(car);
+
+      const bar = (label, val, max, col, formatFn = (v) => v) => `
+        <div class="gr-stat-item">
+            <div class="gr-stat-label"><span>${label}</span> <span>${formatFn(val)}</span></div>
+            <div class="gr-stat-bar-bg">
+                <div class="gr-stat-bar-fill" style="width: ${Math.min(100, (val / max) * 100)}%; background: ${col};"></div>
+            </div>
+        </div>
+      `;
+
+      let repairBlock = "";
+      let hasRepair = false;
+      let cost = 0;
+      if (intPct < 100) {
+        hasRepair = true;
+        const damage = 100 - car.integrity;
+        cost = damage * 25;
+        repairBlock = `
+             <div class="gr-repair-box">
+                <div>
+                   <div style="color:#e74c3c; font-size:0.85rem; font-weight:bold;">REPAROS NECESSÁRIOS</div>
+                   <div style="color:#aaa; font-size:0.75rem;">Restaurar para 100%</div>
+                </div>
+                <button id="gr-repair-btn" style="padding:8px 15px; background:#e74c3c; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.8rem;">
+                   CONSERTAR ($${cost})
+                </button>
+             </div>
+          `;
+      }
 
       sidebar.innerHTML = `
-            <button class="gr-back-filter" onclick="window.garageScreen.deselectCar()">← VOLTAR PARA FILTROS</button>
+            <button class="gr-back-filter" id="gr-back-filter-btn">← VOLTAR AOS FILTROS</button>
             
             <div class="gr-details-sidebar">
                 <div class="gr-detail-header">
+                    <button id="gr-pm-open-btn" style="position:absolute; top:0; right:0; background:rgba(255,255,255,0.1); border:none; padding:12px; border-radius:6px; color:#fff; cursor:pointer; font-size:1.2rem; z-index:100; transition:0.2s;" title="Ver Detalhes">🔍</button>
                     <div class="gr-detail-icon" style="color: ${car.color || "#fff"}">${car.icon || "🚗"}</div>
                     <div class="gr-detail-title">${car.name}</div>
                     <div class="gr-detail-meta">
                         <span>${car.year}</span>
                         <span>•</span>
-                        <span>${car.id ? "Personalizado" : "Stock"}</span>
+                        <span>${car.id ? "PERSONALIZADO" : "DE FÁBRICA"}</span>
                     </div>
                 </div>
 
                 <div class="gr-stat-group">
-                    <div class="gr-label-sec">PERFORMANCE</div>
-                    
-                    <div class="gr-stat-item">
-                        <div class="gr-stat-label"><span>INTEGRIDADE</span> <span>${intPct}%</span></div>
-                        <div class="gr-stat-bar-bg">
-                            <div class="gr-stat-bar-fill ${intPct < 50 ? "danger" : ""}" style="width: ${intPct}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="gr-stat-item">
-                        <div class="gr-stat-label"><span>POTÊNCIA</span> <span>${car.power} HP</span></div>
-                        <div class="gr-stat-bar-bg">
-                            <div class="gr-stat-bar-fill warning" style="width: ${pwrPct}%"></div>
-                        </div>
-                    </div>
+                    <div style="font-size: 0.8rem; color: #666; font-weight: 700; margin-bottom: 5px;">PERFORMANCE</div>
+                    ${bar("POTÊNCIA MÁX.", car.power || 100, 700, "#e74c3c", (v) => v + " HP")}
+                    ${bar("DIRIGIBILIDADE", car.handling || 1, 5, "#3498db", (v) => Number(v).toFixed(1))}
+                    ${bar("PESO", car.weight || 1000, 2000, "#f1c40f", (v) => v + " kg")}
+                    ${bar("INTEGRIDADE", intPct, 100, intPct > 50 ? "#2ecc71" : "#e74c3c", (v) => v + "%")}
                 </div>
 
-                <div class="gr-parts-list">
-                    <div class="gr-label-sec">PEÇAS INSTALADAS</div>
-                    
-                    ${this.renderInstalledParts(car)}
+                ${repairBlock}
+
+                <div class="gr-actions">
+                    <button class="gr-btn btn-tune" id="gr-tune-btn">
+                        🔧 ABRIR OFICINA
+                    </button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="gr-btn btn-drive" id="gr-drive-btn" style="flex:1;">DIRIGIR</button>
+                        <button class="gr-btn btn-sell" id="gr-sell-btn" style="flex:1;">VENDER ($${sellVal.toLocaleString()})</button>
+                    </div>
                 </div>
             </div>
+      `;
+
+      // Delegação de Eventos na Sidebar para garantir que o clique funciona
+      sidebar.onclick = (e) => {
+        if (e.target.closest("#gr-pm-open-btn")) {
+          this.openPhotoMode();
+        } else if (e.target.closest("#gr-back-filter-btn")) {
+          this.deselectCar();
+        } else if (e.target.closest("#gr-repair-btn")) {
+          this.repairCurrent();
+        } else if (e.target.closest("#gr-tune-btn")) {
+          this.openTuning(this.selectedCarIndex);
+        } else if (e.target.closest("#gr-drive-btn")) {
+          alert("Sistema de direção em breve!");
+        } else if (e.target.closest("#gr-sell-btn")) {
+          this.sellCar(this.selectedCarIndex);
+        }
+      };
+    }
+  }
+
+  renderVehicles() {
+    const grid = document.getElementById("gr-grid");
+    const countLabel = document.getElementById("gr-count-label");
+    grid.innerHTML = "";
+
+    const processedList = this.getProcessedVehicles();
+
+    // Atualizar labels reais (pode mostrar o total da coleção independentemente do filtro ou não)
+    countLabel.innerText = `${this.profile.vehicles.length} VEÍCULOS NA COLEÇÃO`;
+
+    if (processedList.length === 0) {
+      grid.innerHTML = `<div style="color:#888; font-size:1.2rem; grid-column:1/-1; text-align:center; margin-top:50px;">Nenhum veículo encontrado. Suas vagas estão livres!</div>`;
+      return;
+    }
+
+    processedList.forEach((item) => {
+      const { car, originalIndex } = item;
+      const isSelected = originalIndex === this.selectedCarIndex;
+      const card = document.createElement("div");
+
+      card.className = `gr-card ${isSelected ? "active" : ""}`;
+
+      const intPct = car.integrity !== undefined ? car.integrity : 100;
+      let intColor = "#2ecc71";
+      if (intPct < 50) intColor = "#e74c3c";
+      else if (intPct < 80) intColor = "#f1c40f";
+
+      card.innerHTML = `
+           <div class="gr-meta">
+              <span style="display:flex; align-items:center; gap:5px;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:${intColor}; display:inline-block; box-shadow:0 0 5px ${intColor};" title="Integrity: ${intPct}%"></span>
+                  ${car.year || "CLÁSSICO"}
+              </span>
+              <span>TIER ${car.tier || 1}</span>
+           </div>
+           
+           <button class="gr-fav-btn ${car.isFavorite ? "active" : ""}" title="Favoritar">⭐</button>
+           
+           <div class="gr-icon" style="color: ${car.color || "#fff"}">${car.icon || "🚗"}</div>
+           
+           <div class="gr-info">
+              <h3>${car.name}</h3>
+           </div>
+           
+           <div class="gr-inline-stats">
+              <div class="gr-inline-stat-col">
+                 <div class="gr-inline-stat-lbl">POTÊNCIA</div>
+                 <div class="gr-inline-bar-bg">
+                     <div style="width:${Math.min(100, ((car.power || 100) / 700) * 100)}%; height:100%; background:#e74c3c;"></div>
+                 </div>
+              </div>
+              <div class="gr-inline-stat-col">
+                 <div class="gr-inline-stat-lbl">DIRIGIBILIDADE</div>
+                 <div class="gr-inline-bar-bg">
+                     <div style="width:${Math.min(100, ((car.handling || 1) / 5) * 100)}%; height:100%; background:#3498db;"></div>
+                 </div>
+              </div>
+              <div class="gr-inline-stat-col">
+                 <div class="gr-inline-stat-lbl">INTEGRIDADE</div>
+                 <div class="gr-inline-bar-bg">
+                     <div style="width:${intPct}%; height:100%; background:${intColor};"></div>
+                 </div>
+              </div>
+           </div>
         `;
-    }
-  }
 
-  renderInstalledParts(car) {
-    console.log("🔧 Renderizando peças instaladas para:", car.name);
-    console.log("📦 installedParts:", car.installedParts);
-
-    // Carregar inventário do perfil para recuperar nomes das peças
-    const allParts = this.getAllPartsCatalog();
-
-    if (!car.installedParts || Object.keys(car.installedParts).length === 0) {
-      return `
-        <div class="gr-part-item" style="color: #666; font-style: italic;">
-          <div class="gr-part-icon">📦</div>
-          <div class="gr-part-info">
-            <span class="gr-part-name">Nenhuma peça instalada</span>
-            <span class="gr-part-level">Use a Oficina para fazer upgrades</span>
-          </div>
-        </div>
-      `;
-    }
-
-    let partsHtml = "";
-
-    // Iterar sobre peças instaladas
-    for (const [slot, partId] of Object.entries(car.installedParts)) {
-      console.log(`🔍 Procurando peça: slot=${slot}, partId=${partId}`);
-
-      // Procurar peça no catálogo
-      const part = allParts.find((p) => p.id === partId);
-
-      if (part) {
-        console.log(`✅ Peça encontrada:`, part);
-        const stats = [];
-        if (part.powerBonus) stats.push(`+${part.powerBonus} HP`);
-        if (part.speedBonus) stats.push(`+${part.speedBonus} km/h`);
-
-        partsHtml += this.renderPartItem(
-          slot,
-          part.name,
-          stats.length > 0 ? stats.join(" • ") : "Upgrade",
-        );
-      } else {
-        console.warn(`⚠️ Peça não encontrada no catálogo: ${partId}`);
-        partsHtml += this.renderPartItem(
-          slot,
-          `Peça #${partId}`,
-          "Desconhecida",
-        );
-      }
-    }
-
-    return partsHtml || this.renderPartItem("generic", "Nenhuma peça", "Stock");
-  }
-
-  getAllPartsCatalog() {
-    // Retornar todas as peças do catálogo da ShopScreen
-    // Se ShopScreen não estiver disponível, retornar array vazio
-    if (!window.shopScreen || !window.shopScreen.partsCatalog) {
-      console.warn("⚠️ ShopScreen ou catálogo de peças não disponível");
-      return [];
-    }
-
-    const catalog = window.shopScreen.partsCatalog;
-    const allParts = [];
-
-    // Concatenar todas as categorias
-    for (const category in catalog) {
-      if (Array.isArray(catalog[category])) {
-        allParts.push(...catalog[category]);
-      }
-    }
-
-    console.log(`📚 Catálogo carregado com ${allParts.length} peças`);
-    return allParts;
-  }
-
-  renderPartItem(iconType, name, level) {
-    const icons = {
-      engine: "🔧",
-      tire: "🍩",
-      gear: "⚙️",
-      body: "🎨",
-    };
-    return `
-        <div class="gr-part-item">
-            <div class="gr-part-icon">${icons[iconType] || "📦"}</div>
-            <div class="gr-part-info">
-                <span class="gr-part-name">${name}</span>
-                <span class="gr-part-level">${level}</span>
-            </div>
-        </div>
-      `;
+      card.onclick = (e) => {
+        if (e.target.closest(".gr-fav-btn")) {
+          e.stopPropagation();
+          car.isFavorite = !car.isFavorite;
+          this.saveProfile();
+          this.renderVehicles();
+          if (this.selectedCarIndex === originalIndex) this.renderSidebar();
+          return;
+        }
+        this.selectCar(originalIndex);
+      };
+      grid.appendChild(card);
+    });
   }
 
   setFilter(filter) {
+    if (this.currentFilter === filter) return;
     this.currentFilter = filter;
+    this.selectedCarIndex = -1;
+    this.sidebarMode = "filter";
+    this.renderVehicles();
     this.renderSidebar();
-    // TODO: Implementar filtro real no grid se necessário
   }
 
   selectCar(index) {
-    if (this.selectedCarIndex === index) return; // Já selecionado
-
-    this.selectedCarIndex = index;
-    this.sidebarMode = "details";
-
-    this.renderSidebar();
-    this.renderVehicles(); // Atualizar highlights no grid
+    if (this.selectedCarIndex === index) {
+      this.deselectCar();
+    } else {
+      this.selectedCarIndex = index;
+      this.sidebarMode = "details";
+      this.renderVehicles();
+      this.renderSidebar();
+    }
   }
 
   deselectCar() {
     this.selectedCarIndex = -1;
     this.sidebarMode = "filter";
-    this.renderSidebar();
     this.renderVehicles();
+    this.renderSidebar();
   }
 
-  renderVehicles() {
-    const grid = document.getElementById("gr-grid");
-    grid.innerHTML = "";
+  repairCurrent() {
+    const car = this.profile.vehicles[this.selectedCarIndex];
+    if (!car || car.integrity >= 100) return;
 
-    const vehicles = this.profile.vehicles;
+    const damage = 100 - car.integrity;
+    const cost = damage * 25;
 
-    if (vehicles.length === 0) {
-      grid.innerHTML =
-        '<div style="color: #666; font-size: 1.5rem; padding: 20px;">Sua garagem está vazia. Visite a Agência!</div>';
-      return;
+    if (this.profile.cash >= cost) {
+      if (confirm(`O conserto custa $${cost.toLocaleString()}. Confirmar?`)) {
+        this.profile.cash -= cost;
+        car.integrity = 100;
+        this.saveProfile();
+        document.getElementById("gr-wallet-amount").innerText =
+          this.profile.cash.toLocaleString();
+        this.renderVehicles();
+        this.renderSidebar();
+      }
+    } else {
+      alert(`Fundos insuficientes! Necessário $${cost.toLocaleString()}.`);
     }
+  }
 
-    vehicles.forEach((car, index) => {
-      const isSelected = index === this.selectedCarIndex;
-      const card = document.createElement("div");
-      // Adicionar classe .active se selecionado
-      card.className = `gr-card anim-fade-up ${isSelected ? "active" : ""}`;
-      // Adicionar evento de clique para seleção
-      card.onclick = (e) => {
-        // Ignorar se clicou nos botões de ação
-        if (e.target.tagName === "BUTTON") return;
-        this.selectCar(index);
-      };
+  openPhotoMode() {
+    const car = this.profile.vehicles[this.selectedCarIndex];
+    if (!car) return;
 
-      if (isSelected) {
-        card.style.borderColor = "#3498db";
-        card.style.backgroundColor = "rgba(52, 152, 219, 0.1)";
-        card.style.transform = "scale(1.02)";
+    document.getElementById("gr-photo-mode").style.display = "flex";
+    document.getElementById("gr-pm-icon").innerText = car.icon || "🚗";
+    document.getElementById("gr-pm-icon").style.color = car.color || "#fff";
+    document.getElementById("gr-pm-title").innerText = car.name;
+    document.getElementById("gr-pm-subtitle").innerText =
+      `${car.year} | ${car.id ? "PERSONALIZADO" : "DE FÁBRICA"} | ${car.power} HP`;
+
+    const pContainer = document.getElementById("gr-pm-parts");
+    pContainer.innerHTML = "";
+
+    const slotTranslations = {
+      engine: "Motor",
+      transmission: "Transmissão",
+      exhaust: "Escapamento",
+      tires: "Pneus",
+      brakes: "Freios",
+      suspension: "Suspensão",
+      turbo: "Turbo",
+      ecu: "Central (ECU)",
+      weight: "Alívio de Peso",
+      carburetor: "Carburador",
+      intake: "Admissão",
+      pistons: "Pistões",
+      differential: "Diferencial",
+      generic: "Peça Genérica",
+    };
+
+    const baseSlots = [
+      "engine",
+      "transmission",
+      "tires",
+      "brakes",
+      "suspension",
+      "exhaust",
+      "carburetor",
+    ];
+    const installedSlots = car.installedParts
+      ? Object.keys(car.installedParts)
+      : [];
+    const allSlotsToDisplay = [...new Set([...baseSlots, ...installedSlots])];
+
+    allSlotsToDisplay.forEach((slot) => {
+      const ptSlot = slotTranslations[slot] || slot.toUpperCase();
+      const partId = car.installedParts ? car.installedParts[slot] : null;
+      let levelText = "ORIGINAL";
+      let color = "#aaa";
+
+      if (partId) {
+        // Extrair o "nível" do final do ID da peça (ex: eng_carb_2 -> 2)
+        const match = partId.match(/\d+$/);
+        levelText = match ? `NÍVEL ${match[0]}` : "MELHORADO";
+        color = "#fff";
       }
 
-      // Calcular valor de revenda (70% do valor se novo, + variação)
-      const sellValue = Math.floor(car.price * 0.7);
+      const el = document.createElement("div");
+      el.style.cssText =
+        "background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:10px 20px; border-radius:4px; display:flex; flex-direction:column; align-items:center; min-width:120px;";
 
-      card.innerHTML = `
-                <div class="gr-meta">
-                    <span>#${index + 1}</span>
-                    <span>${car.year}</span>
-                </div>
+      if (partId) {
+        el.style.background = "rgba(46, 204, 113, 0.1)";
+        el.style.borderColor = "rgba(46, 204, 113, 0.3)";
+        color = "#2ecc71";
+      }
 
-                <div class="gr-icon" style="color: ${car.color || "#fff"}">${car.icon || "🚗"}</div>
-                
-                <div class="gr-info">
-                    <h3>${car.name}</h3>
-                    <p>${car.desc || "Veículo customizado"}</p>
-                </div>
-                
-                <div class="gr-stats">
-                    <div class="gr-stat-tag">⚡ ${car.power} HP</div>
-                    <div class="gr-stat-tag">🛠️ ${car.integrity || 100}%</div>
-                </div>
-
-                <div class="gr-actions">
-                    <button class="gr-btn btn-drive" onclick="alert('Sistema de direção em breve!')">DIRIGIR</button>
-                    <button class="gr-btn btn-tune" onclick="window.garageScreen.openTuning(${index})">TUNAR</button>
-                    <button class="gr-btn btn-sell" onclick="window.garageScreen.sellCar(${index}, ${sellValue})">VENDER ($${sellValue.toLocaleString()})</button>
-                </div>
-            `;
-      grid.appendChild(card);
+      el.innerHTML = `
+            <div style="font-size:0.8rem; color:#888; text-transform:uppercase; margin-bottom:5px;">${ptSlot}</div>
+            <div style="font-weight:bold; color:${color};">${levelText}</div>
+          `;
+      pContainer.appendChild(el);
     });
-  }
-
-  sellCar(index, value) {
-    if (
-      confirm(
-        `Tem certeza que deseja vender este veículo por $${value.toLocaleString()}?`,
-      )
-    ) {
-      // Adicionar dinheiro
-      this.profile.cash += value;
-
-      // Remover carro
-      this.profile.vehicles.splice(index, 1);
-
-      // Salvar
-      if (window.profileManager)
-        window.profileManager.saveProfile(this.profile);
-
-      // Atualizar UI
-      this.updateUI();
-      this.renderVehicles(); // Re-render grid
-
-      // Notificação
-      if (window.gameNotifications)
-        window.gameNotifications.success(
-          `Veículo vendido por $${value.toLocaleString()}`,
-        );
-    }
   }
 
   openTuning(vehicleIndex) {
@@ -711,46 +742,34 @@ class GarageScreen {
     }
   }
 
-  updateUI() {
-    // Atualizar saldo e contador
-    const wallet = document.getElementById("gr-wallet-amount");
-    if (wallet) wallet.innerText = this.profile.cash.toLocaleString();
+  sellCar(idx) {
+    const car = this.profile.vehicles[idx];
+    const val = this.calculateCarValue(car);
+    if (
+      confirm(
+        `Vender este veículo por $${val.toLocaleString()}? Essa ação não pode ser desfeita.`,
+      )
+    ) {
+      this.profile.cash += val;
+      this.profile.vehicles.splice(idx, 1);
+      this.saveProfile();
 
-    const count = document.querySelector(".gr-count");
-    if (count)
-      count.innerText = `${this.profile.vehicles.length} VEÍCULOS NA COLEÇÃO`;
+      this.selectedCarIndex = -1;
+      this.sidebarMode = "filter";
+      document.getElementById("gr-wallet-amount").innerText =
+        this.profile.cash.toLocaleString();
+      this.renderVehicles();
+      this.renderSidebar();
+    }
   }
 
   attachEvents() {
-    // 1. Botão Voltar (topo esquerdo)
-    const backBtn = document.getElementById("gr-back-btn");
-    if (backBtn) {
-      backBtn.onclick = (e) => {
-        e.stopPropagation(); // Evitar disparar o deselect
-        if (this.eventSystem) this.eventSystem.showScreen("main-menu");
-      };
-    }
-
-    // 2. Clique Fora (Deselecionar)
-    const container = document.getElementById("garage-container");
-    if (container) {
-      container.onclick = (e) => {
-        // Se clicar em algo interativo (Card, Sidebar, Botão), ignorar
-        const isInteractive =
-          e.target.closest(".gr-card") ||
-          e.target.closest(".gr-sidebar") ||
-          e.target.closest("button");
-
-        // Se clicar no vazio E tiver carro selecionado
-        if (!isInteractive && this.selectedCarIndex !== -1) {
-          this.deselectCar();
-        }
-      };
-    }
+    document.getElementById("gr-back-btn").onclick = () => {
+      if (this.eventSystem) this.eventSystem.showScreen("main-menu");
+    };
   }
 }
 
-// Global Register
 if (typeof window !== "undefined") {
   window.GarageScreen = GarageScreen;
   window.garageScreen = new GarageScreen();

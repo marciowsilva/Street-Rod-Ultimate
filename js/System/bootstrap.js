@@ -71,6 +71,7 @@ async function initializeSystem() {
       "js/Screens/ShopScreen.js",
       "js/Screens/CarShopScreen.js",
       "js/Screens/TuningScreen.js",
+      "js/Screens/RaceScreen.js",
     ];
 
     for (const script of essentialScripts) {
@@ -85,6 +86,7 @@ async function initializeSystem() {
         "ShopScreen.js": "shopScreen",
         "CarShopScreen.js": "carShopScreen",
         "TuningScreen.js": "tuningScreen",
+        "RaceScreen.js": "raceScreen",
         "ProfileManager.js": "profileManager",
         "GameNotifications.js": "gameNotifications",
         "EventSystem.js": "eventSystem",
@@ -128,6 +130,7 @@ async function initializeSystem() {
       { id: "car-shop-screen", instance: window.carShopScreen },
       { id: "garage-screen", instance: window.garageScreen },
       { id: "tuning-screen", instance: window.tuningScreen },
+      { id: "race-screen", instance: window.raceScreen },
     ];
 
     screens.forEach((screen) => {

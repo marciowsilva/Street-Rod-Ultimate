@@ -391,8 +391,10 @@ class MainMenuScreen {
 
     // Outros botões
     this.setupButton("race-button", () => {
-      console.log("🏁 Corrida selecionada");
-      alert("🏁 Sistema de corridas em desenvolvimento");
+      console.log("🏁 Iniciando Sistema de Corrida...");
+      if (window.eventSystem && window.eventSystem.showScreen) {
+        window.eventSystem.showScreen("race-screen");
+      }
     });
 
     this.setupButton("shop-button", () => {

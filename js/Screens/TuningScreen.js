@@ -123,7 +123,7 @@ class TuningScreen {
                     display: flex;
                     flex-direction: column;
                     padding: 30px;
-                    max-width: 1400px;
+                    max-width: 1200px;
                     margin: 0 auto;
                     width: 100%;
                 }
@@ -133,9 +133,12 @@ class TuningScreen {
                     justify-content: space-between;
                     align-items: center;
                     margin-bottom: 30px;
-                    margin-left: 100px;
                     border-bottom: 1px solid rgba(255,255,255,0.1);
                     padding-bottom: 20px;
+                }
+
+                .tu-title {
+                    margin-left: 100px;
                 }
 
                 .tu-title h1 {
