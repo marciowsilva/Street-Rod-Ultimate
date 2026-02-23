@@ -522,7 +522,9 @@ class GarageScreen {
         } else if (e.target.closest("#gr-tune-btn")) {
           this.openTuning(this.selectedCarIndex);
         } else if (e.target.closest("#gr-drive-btn")) {
-          alert("Sistema de direção em breve!");
+          this.eventSystem.showScreen("race-screen", {
+            vehicleIndex: this.selectedCarIndex,
+          });
         } else if (e.target.closest("#gr-sell-btn")) {
           this.sellCar(this.selectedCarIndex);
         }
