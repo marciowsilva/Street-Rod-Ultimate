@@ -595,7 +595,7 @@ class ProfileSelectionScreen {
         if (cur?.name === profileName) {
           localStorage.removeItem("streetrod2_current_profile");
           window.currentProfile = null;
-          
+
           // CRITICAL FIX: Reset to Boot Mode immediately
           const container = document.getElementById("ps-container");
           const backBtn = document.getElementById("ps-back-btn");
@@ -604,12 +604,14 @@ class ProfileSelectionScreen {
 
           if (container) container.classList.remove("management-mode");
           if (backBtn) backBtn.style.display = "none";
-          if (title) title.innerHTML = 'STREET ROD <span class="ps-accent-text">II</span>';
+          if (title)
+            title.innerHTML =
+              'STREET ROD <span class="ps-accent-text">II</span>';
           if (subtitle) {
-              subtitle.innerText = "SELECIONE SEU PILOTO";
-              subtitle.style.color = "#aaa"; // Reset color
+            subtitle.innerText = "SELECIONE SEU PILOTO";
+            subtitle.style.color = "#aaa"; // Reset color
           }
-          
+
           // Stop management slideshow
           this.stopBackgroundSlideshow();
         }
