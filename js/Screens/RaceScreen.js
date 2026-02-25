@@ -1,5 +1,4 @@
 ﻿// RaceScreen.js - v22.0 DRAG RACE SIDE VIEW (Classic Arrancada)
-console.log("🏁 RaceScreen v22: Drag Race Side View Loading...");
 
 class RaceScreen {
   constructor(eventSystem) {
@@ -35,7 +34,7 @@ class RaceScreen {
       !this.profile.vehicles.length
     ) {
       alert("Selecione um veiculo na garagem primeiro!");
-      if (this.eventSystem) this.eventSystem.showScreen("garage-screen");
+      if (this.eventSystem) this.eventSystem.showScreen("garage");
       return this;
     }
 
@@ -164,55 +163,178 @@ class RaceScreen {
     // Lane separators & road are drawn on canvas. Cars are HTML overlays.
 
     // ── HTML STRUCTURE ───────────────────────
-    root.innerHTML =
+    root.innerHTML = `
+      <style id="race-layout-styles">
+        #rc-drag-root {
+          background: #000;
+        }
+
+        /* Top HUD Bar */
+        #drag-top-hud {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 60px;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.6));
+          display: flex;
+          align-items: center;
+          padding: 10px 20px;
+          gap: 15px;
+          z-index: 40;
+          border-bottom: 2px solid rgba(255,255,255,0.1);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        #drag-top-hud .player-label {
+          color: #e74c3c;
+          font-weight: 700;
+          font-size: 0.9rem;
+          min-width: 100px;
+        }
+
+        #drag-top-hud .progress-section {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        #drag-top-hud .progress-bar {
+          flex: 1;
+          height: 12px;
+          background: rgba(255,255,255,0.12);
+          border-radius: 6px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        #drag-top-hud .finish-label {
+          font-size: 0.65rem;
+          color: #888;
+          padding-right: 4px;
+        }
+
+        #drag-top-hud .player-you {
+          color: #2ecc71;
+          font-weight: 700;
+          font-size: 0.9rem;
+          min-width: 100px;
+          text-align: right;
+        }
+
+        /* Racing Area */
+        #drag-racing-area {
+          position: absolute;
+          top: 60px;
+          left: 0;
+          right: 0;
+          bottom: 180px;
+        }
+
+        /* Bottom HUD */
+        #drag-bottom-hud {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 180px;
+          background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+          display: flex;
+          align-items: flex-end;
+          padding: 20px 40px;
+          justify-content: space-between;
+          gap: 30px;
+          z-index: 40;
+          border-top: 2px solid rgba(255,255,255,0.1);
+          box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+        }
+
+        #drag-bottom-hud > div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        #drag-bottom-hud .hud-label {
+          color: #aaa;
+          font-size: 0.8rem;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          margin-bottom: 5px;
+        }
+
+        #drag-bottom-hud .hud-large-value {
+          color: #fff;
+          font-size: 4.5rem;
+          font-weight: 900;
+          line-height: 1;
+          text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        #drag-bottom-hud .hud-unit {
+          color: #666;
+          font-size: 0.9rem;
+        }
+
+        /* Center Tachometer Area */
+        #drag-center-hud {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          margin-bottom: -20px;
+        }
+      </style>`
+    root.innerHTML +=
       // Background canvas
       '<canvas id="drag-canvas" style="' +
       bgStyle +
       '"></canvas>' +
-      // ─── ENEMY LANE (top half — 18%..48% from top) ───
-      '<div id="drag-lane-enemy" style="position:absolute;top:12%;left:0;right:0;height:36%;pointer-events:none;">' +
-      // Enemy car
-      '<div id="drag-enemy" style="position:absolute;top:50%;transform:translateY(-50%);height:80px;width:200px;left:30px;">' +
-      this.buildCarHTML(eColor, false) +
-      "</div>" +
-      // Enemy name tag
-      '<div style="position:absolute;top:4px;right:20px;color:#fff;font-size:0.85rem;font-weight:700;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:4px;letter-spacing:1px;">' +
-      eName.toUpperCase() +
-      "</div>" +
-      "</div>" +
-      // ─── PLAYER LANE (bottom half — 52%..82% from top) ───
-      '<div id="drag-lane-player" style="position:absolute;top:50%;left:0;right:0;height:36%;pointer-events:none;">' +
-      // Player car
-      '<div id="drag-player" style="position:absolute;top:50%;transform:translateY(-50%);height:90px;width:220px;left:30px;">' +
-      this.buildCarHTML(pColor, true) +
-      "</div>" +
-      // Player name tag
-      '<div style="position:absolute;bottom:4px;right:20px;color:#fff;font-size:0.85rem;font-weight:700;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:4px;letter-spacing:1px;">' +
-      pName.toUpperCase() +
-      "</div>" +
-      "</div>" +
-      // ─── TOP BAR: progress ───────────────────
-      '<div style="position:absolute;top:0;left:0;right:0;height:50px;background:linear-gradient(to bottom,rgba(0,0,0,0.9),rgba(0,0,0,0.4));display:flex;align-items:center;padding:0 20px;gap:15px;z-index:40;">' +
-      '<div style="color:#e74c3c;font-weight:700;font-size:0.9rem;min-width:80px;">' +
-      eName.toUpperCase() +
-      "</div>" +
-      '<div style="flex:1;height:10px;background:rgba(255,255,255,0.12);border-radius:5px;overflow:hidden;position:relative;">' +
+      // ─── TOP HUD ────────────────────────────
+      '<div id="drag-top-hud">' +
+      '<div class="player-label">' + eName.toUpperCase() + '</div>' +
+      '<div class="progress-section">' +
+      '<div class="progress-bar">' +
       '<div id="drag-prog-enemy" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#e74c3c;border-radius:5px;box-shadow:0 0 8px #e74c3c;transition:width 0.1s;"></div>' +
       '<div id="drag-prog-player" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#2ecc71;border-radius:5px;box-shadow:0 0 8px #2ecc71;transition:width 0.1s;"></div>' +
-      '<div style="position:absolute;top:-3px;right:0;font-size:0.7rem;color:#888;padding-right:4px;transform:translateY(-100%);">META</div>' +
-      "</div>" +
-      '<div style="color:#2ecc71;font-weight:700;font-size:0.9rem;min-width:80px;text-align:right;">VOCE</div>' +
-      "</div>" +
-      // ─── HUD BOTTOM ─────────────────────────
-      '<div style="position:absolute;bottom:0;left:0;right:0;height:170px;background:linear-gradient(to top,rgba(0,0,0,0.95),transparent);display:flex;align-items:flex-end;padding-bottom:20px;justify-content:space-between;padding:0 40px 20px;z-index:40;">' +
-      // Speed
-      '<div style="text-align:left;">' +
-      '<div style="color:#aaa;font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;">Velocidade</div>' +
-      '<div id="drag-spd" style="color:#fff;font-size:5rem;font-weight:900;line-height:1;text-shadow:0 0 20px rgba(255,255,255,0.3);">0</div>' +
-      '<div style="color:#666;font-size:1rem;">KM/H</div>' +
-      "</div>" +
+      '</div>' +
+      '<div class="finish-label">META</div>' +
+      '</div>' +
+      '<div class="player-you">VOCÊ</div>' +
+      '</div>' +
+      // ─── RACING AREA ────────────────────────
+      '<div id="drag-racing-area">' +
+      // ─── ENEMY LANE (top half) ───
+      '<div id="drag-lane-enemy" style="position:absolute;top:12%;left:0;right:0;height:36%;pointer-events:none;">' +
+      '<div id="drag-enemy" style="position:absolute;top:50%;transform:translateY(-50%);height:80px;width:200px;left:30px;">' +
+      this.buildCarHTML(eColor, false) +
+      '</div>' +
+      '<div style="position:absolute;top:4px;right:20px;color:#fff;font-size:0.85rem;font-weight:700;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:4px;letter-spacing:1px;">' +
+      eName.toUpperCase() +
+      '</div>' +
+      '</div>' +
+      // ─── PLAYER LANE (bottom half) ───
+      '<div id="drag-lane-player" style="position:absolute;top:50%;left:0;right:0;height:36%;pointer-events:none;">' +
+      '<div id="drag-player" style="position:absolute;top:50%;transform:translateY(-50%);height:90px;width:220px;left:30px;">' +
+      this.buildCarHTML(pColor, true) +
+      '</div>' +
+      '<div style="position:absolute;bottom:4px;right:20px;color:#fff;font-size:0.85rem;font-weight:700;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:4px;letter-spacing:1px;">' +
+      pName.toUpperCase() +
+      '</div>' +
+      '</div>' +
+      // Feedback
+      '<div id="drag-feedback" style="position:absolute;top:44%;width:100%;text-align:center;font-size:3rem;font-weight:900;letter-spacing:4px;opacity:0;transition:opacity 0.15s,transform 0.15s;z-index:50;pointer-events:none;text-shadow:0 4px 15px rgba(0,0,0,0.9);"></div>' +
+      '</div>' +
+      // ─── BOTTOM HUD ─────────────────────────
+      '<div id="drag-bottom-hud">' +
+      '<div>' +
+      '<div class="hud-label">Velocidade</div>' +
+      '<div id="drag-spd" class="hud-large-value">0</div>' +
+      '<div class="hud-unit">KM/H</div>' +
+      '</div>' +
       // Center: Full circular tachometer
-      '<div style="display:flex;flex-direction:column;align-items:center;position:relative;margin-bottom:-20px;">' +
+      '<div id="drag-center-hud">' +
       // Shift lights row above gauge
       '<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">' +
       '<div id="sl0" style="width:12px;height:12px;border-radius:50%;background:#111;border:2px solid #333;transition:all 0.08s;box-shadow:none;"></div>' +
@@ -220,9 +342,9 @@ class RaceScreen {
       '<div id="sl2" style="width:18px;height:18px;border-radius:50%;background:#111;border:2px solid #333;transition:all 0.08s;box-shadow:none;"></div>' +
       '<div id="sl3" style="width:14px;height:14px;border-radius:50%;background:#111;border:2px solid #333;transition:all 0.08s;box-shadow:none;"></div>' +
       '<div id="sl4" style="width:12px;height:12px;border-radius:50%;background:#111;border:2px solid #333;transition:all 0.08s;box-shadow:none;"></div>' +
-      "</div>" +
+      '</div>' +
       // SVG circular gauge
-      '<div style="position:relative;width:180px;height:180px;">' +
+      '<div style="position:relative;width:180px;height:180px;margin-bottom:10px;">' +
       '<svg id="drag-tacho-svg" width="180" height="180" viewBox="0 0 180 180">' +
       // Outer ring glossy
       '<circle cx="90" cy="90" r="88" fill="url(#gaugeBody)" stroke="#444" stroke-width="2"/>' +
@@ -349,17 +471,12 @@ class RaceScreen {
       "</div>" +
       "</div>" +
       "</div>" +
-      // Distance
-      '<div style="text-align:right;">' +
-      '<div style="color:#aaa;font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;">Distancia</div>' +
-      '<div id="drag-dist" style="color:#fff;font-size:5rem;font-weight:900;line-height:1;text-shadow:0 0 20px rgba(255,200,0,0.3);">0</div>' +
-      '<div style="color:#666;font-size:1rem;">/ ' +
-      this.trackLength +
-      "m</div>" +
-      "</div>" +
-      "</div>" +
-      // ─── FEEDBACK ────────────────────────────
-      '<div id="drag-feedback" style="position:absolute;top:44%;width:100%;text-align:center;font-size:3rem;font-weight:900;letter-spacing:4px;opacity:0;transition:opacity 0.15s,transform 0.15s;z-index:50;pointer-events:none;text-shadow:0 4px 15px rgba(0,0,0,0.9);"></div>' +
+      '<div>' +
+      '<div class="hud-label">Distância</div>' +
+      '<div id="drag-dist" class="hud-large-value">0</div>' +
+      '<div class="hud-unit">/ ' + this.trackLength + 'm</div>' +
+      '</div>' +
+      '</div>' +
       // ─── START OVERLAY ────────────────────────
       '<div id="drag-start" style="position:absolute;inset:0;background:rgba(0,0,0,0.75);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:60;backdrop-filter:blur(4px);">' +
       '<div style="font-size:1rem;color:#aaa;letter-spacing:6px;text-transform:uppercase;margin-bottom:8px;">Corrida de Arrancada</div>' +
@@ -625,11 +742,11 @@ class RaceScreen {
     };
     document.getElementById("drag-btn-back").onclick = function () {
       self.hide();
-      self.eventSystem.showScreen("garage-screen");
+      self.eventSystem.showScreen("garage");
     };
     document.getElementById("drag-res-back").onclick = function () {
       self.hide();
-      self.eventSystem.showScreen("garage-screen");
+      self.eventSystem.showScreen("garage");
     };
 
     window.addEventListener("resize", function () {
