@@ -448,6 +448,181 @@
     }
 }
 
+/* ============================================
+   GARAGE SCREEN IMAGES & TABS (GarageScreen Updates)
+   ============================================ */
+
+/* Grid Images for GarageScreen Cards */
+.gr-image-card {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 10px 0;
+    flex-shrink: 0;
+}
+
+.gr-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.gr-image-card:hover img {
+    transform: scale(1.05);
+}
+
+.gr-icon-fallback {
+    font-size: 4rem;
+    filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.2));
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tabs System for GarageScreen Details Sidebar (Blue Theme) */
+.gr-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.gr-tab-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    font-family: 'Rajdhani', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.gr-tab-btn:hover {
+    color: #fff;
+}
+
+.gr-tab-btn.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+}
+
+.gr-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.gr-tab-content.active {
+    display: block;
+}
+
+/* Technical Specs Grid in GarageScreen */
+.gr-tech-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.gr-tech-spec-item {
+    background: rgba(255,255,255,0.03);
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 2px solid #3498db;
+}
+
+.gr-tech-spec-label {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.gr-tech-spec-value {
+    font-size: 1.2rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Details Tab Content */
+.gr-detail-block {
+    background: rgba(255,255,255,0.03);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: grid;
+    gap: 8px;
+}
+
+.gr-detail-block-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.gr-detail-block-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.gr-history-block {
+    background: rgba(243, 156, 18, 0.1);
+    border-left: 3px solid #f39c12;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.gr-history-label {
+    font-size: 0.75rem;
+    color: #f39c12;
+    margin-bottom: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.gr-history-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Responsive adjustments for GarageScreen */
+@media (max-width: 768px) {
+    .gr-tech-specs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gr-tabs {
+        gap: 4px;
+    }
+
+    .gr-tab-btn {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+}
+
 /* Impressão */
 @media print {
     .no-print {
@@ -2018,5 +2193,523 @@ body.night-mode {
 
     .opponents-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/* ============================================
+   CAR IMAGE AND SPECS STYLES (New Database)
+   ============================================ */
+
+/* Car Image Container */
+.car-image-container {
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.car-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.car-image-container:hover img {
+    transform: scale(1.05);
+}
+
+/* Car Image Fallback (Emoji) */
+.car-image-fallback {
+    font-size: 5rem;
+    opacity: 0.8;
+}
+
+/* Car Badge (Popularity, Condition, etc) */
+.car-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(5px);
+}
+
+.car-badge.popular {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.car-badge.rarity-high {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.car-badge.new {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.car-badge.used {
+    background: rgba(230, 126, 34, 0.8);
+}
+
+/* Specs Tab Navigation */
+.car-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.car-tab {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.car-tab:hover {
+    color: #fff;
+}
+
+.car-tab.active {
+    color: #00ff88;
+    border-bottom-color: #00ff88;
+}
+
+/* Tab Content */
+.car-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.car-tab-content.active {
+    display: block;
+}
+
+/* Performance Stats Grid */
+.car-performance-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: rgba(0, 255, 136, 0.08);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.stat-box:hover {
+    background: rgba(0, 255, 136, 0.12);
+    border-color: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+.stat-box-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #00ff88;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-box-label {
+    font-size: 0.8rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-box-unit {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+/* Technical Specs */
+.car-technical-specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.spec-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 3px solid #00ff88;
+}
+
+.spec-label {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.spec-value {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Historical Info */
+.car-historical {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 4px solid #f39c12;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.historical-section h4 {
+    color: #f39c12;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.historical-text {
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.production-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.production-item {
+    text-align: center;
+}
+
+.production-label {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.production-value {
+    font-size: 1.1rem;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* Car Comparison Section */
+.car-comparison {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.15);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.comparison-title {
+    color: #00ff88;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.comparison-bar {
+    margin-bottom: 12px;
+}
+
+.comparison-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.comparison-bar-label-text {
+    color: #aaa;
+}
+
+.comparison-bar-value {
+    color: #00ff88;
+    font-weight: bold;
+}
+
+.comparison-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.comparison-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88, #00cc66);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Car Gallery (for multiple images) */
+.car-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.gallery-item {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    cursor: pointer;
+    transition: transform 0.3s;
+    border: 2px solid transparent;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    border-color: #00ff88;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Price Display */
+.car-price-section {
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.15), rgba(230, 126, 34, 0.15));
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.car-price-label {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.car-price-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Car Shop Shop List */
+.car-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.car-shop-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-shop-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 255, 136, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.car-shop-card-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.car-shop-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.car-shop-card-body {
+    padding: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-shop-card-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.car-shop-card-year {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.car-shop-card-description {
+    font-size: 0.8rem;
+    color: #bdc3c7;
+    margin-bottom: 12px;
+    flex: 1;
+}
+
+.car-shop-card-stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.car-shop-badge {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.car-shop-price {
+    font-size: 1.5rem;
+    color: #f39c12;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.car-shop-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: black;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.car-shop-button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+.car-shop-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .car-performance-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .car-technical-specs {
+        grid-template-columns: 1fr;
+    }
+
+    .car-shop-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .car-tabs {
+        flex-wrap: wrap;
+    }
+
+    .car-tab {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+
+    .car-performance-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .car-image-container {
+        height: 250px;
+    }
+
+    .production-info {
+        grid-template-columns: 1fr;
+    }
+
+    .car-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .car-shop-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .car-tabs {
+        gap: 5px;
+    }
+
+    .car-tab {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+
+    .car-performance-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-box-value {
+        font-size: 1.4rem;
+    }
+
+    .car-image-container {
+        height: 200px;
+    }
+
+    .car-price-value {
+        font-size: 1.8rem;
     }
 }

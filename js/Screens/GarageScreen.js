@@ -480,7 +480,12 @@ class GarageScreen {
             <div class="gr-details-sidebar">
                 <div class="gr-detail-header">
                     <button id="gr-pm-open-btn" style="position:absolute; top:0; right:0; background:rgba(255,255,255,0.1); border:none; padding:12px; border-radius:6px; color:#fff; cursor:pointer; font-size:1.2rem; z-index:100; transition:0.2s;" title="Ver Detalhes">🔍</button>
-                    <div class="gr-detail-icon" style="color: ${car.color || "#fff"}">${car.icon || "🚗"}</div>
+
+                    <div class="gr-image-card" style="width: 100%; height: 150px; margin-bottom: 15px;">
+                        ${car.imageUrl ? `<img src="${car.imageUrl}" alt="${car.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ""}
+                        <div class="gr-icon-fallback" style="color: ${car.color || "#fff"}; display: ${car.imageUrl ? "none" : "flex"}">${car.icon || "🚗"}</div>
+                    </div>
+
                     <div class="gr-detail-title">${car.name}</div>
                     <div class="gr-detail-meta">
                         <span>${car.year}</span>
@@ -489,14 +494,100 @@ class GarageScreen {
                     </div>
                 </div>
 
-                <div class="gr-stat-group">
-                    <div style="font-size: 0.8rem; color: #666; font-weight: 700; margin-bottom: 5px;">PERFORMANCE</div>
-                    ${bar("POTÊNCIA MÁX.", car.power || 100, 700, "#e74c3c", (v) => v + " HP")}
-                    ${bar("DIRIGIBILIDADE", car.handling || 1, 5, "#3498db", (v) => Number(v).toFixed(1))}
-                    ${bar("PESO", car.weight || 1000, 2000, "#f1c40f", (v) => v + " kg")}
-                    ${bar("INTEGRIDADE", intPct, 100, intPct > 50 ? "#2ecc71" : "#e74c3c", (v) => v + "%")}
+                <!-- TAB SYSTEM -->
+                <div class="gr-tabs" id="gr-spec-tabs">
+                    <button class="gr-tab-btn active" data-tab="performance">PERFORMANCE</button>
+                    <button class="gr-tab-btn" data-tab="technical">TÉCNICA</button>
+                    <button class="gr-tab-btn" data-tab="details">DETALHES</button>
                 </div>
 
+                <!-- PERFORMANCE TAB -->
+                <div class="gr-tab-content active" data-tab="performance">
+                    <div class="gr-stat-group">
+                        <div style="font-size: 0.8rem; color: #666; font-weight: 700; margin-bottom: 5px;">PERFORMANCE</div>
+                        ${bar("POTÊNCIA MÁX.", car.power || 100, 700, "#e74c3c", (v) => v + " HP")}
+                        ${bar("TORQUE", car.torque || 0, 600, "#f39c12", (v) => v + " Nm")}
+                        ${bar("DIRIGIBILIDADE", car.handling || 1, 5, "#3498db", (v) => Number(v).toFixed(1))}
+                        ${bar("PESO", car.weight || 1000, 2000, "#95a5a6", (v) => v + " kg")}
+                        ${bar("ACELERAÇÃO 0-100", car.acceleration || 10, 15, "#9b59b6", (v) => v + "s")}
+                        ${bar("VELOCIDADE MÁX", car.topSpeed || 200, 300, "#1abc9c", (v) => v + " km/h")}
+                        ${bar("INTEGRIDADE", intPct, 100, intPct > 50 ? "#2ecc71" : "#e74c3c", (v) => v + "%")}
+                    </div>
+                </div>
+
+                <!-- TECHNICAL TAB -->
+                <div class="gr-tab-content" data-tab="technical">
+                    <div class="gr-tech-specs-grid">
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Cilindros</div>
+                            <div class="gr-tech-spec-value">${car.cylinders || "N/A"}</div>
+                        </div>
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Cilindrada</div>
+                            <div class="gr-tech-spec-value">${car.displacement || "N/A"} cc</div>
+                        </div>
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Motor</div>
+                            <div class="gr-tech-spec-value">${(car.engineType || "N/A").toUpperCase()}</div>
+                        </div>
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Transmissão</div>
+                            <div class="gr-tech-spec-value">${car.transmission || "N/A"}</div>
+                        </div>
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Tração</div>
+                            <div class="gr-tech-spec-value">${(car.driveType || "N/A").toUpperCase()}</div>
+                        </div>
+                        <div class="gr-tech-spec-item">
+                            <div class="gr-tech-spec-label">Combustível</div>
+                            <div class="gr-tech-spec-value">${car.fuelType || "N/A"}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILS TAB -->
+                <div class="gr-tab-content" data-tab="details">
+                    <div style="display: grid; gap: 10px;">
+                        <div class="gr-detail-block">
+                            <div class="gr-detail-block-label">Categoria</div>
+                            <div class="gr-detail-block-text">${(car.category || "N/A").toUpperCase()}</div>
+                        </div>
+                        <div class="gr-detail-block">
+                            <div class="gr-detail-block-label">Condição</div>
+                            <div class="gr-detail-block-text">${(car.condition || "new").toUpperCase()}</div>
+                        </div>
+                        <div class="gr-detail-block">
+                            <div class="gr-detail-block-label">Produção</div>
+                            <div class="gr-detail-block-text">${car.productionYears || "N/A"}</div>
+                        </div>
+                        <div class="gr-detail-block">
+                            <div class="gr-detail-block-label">Descrição</div>
+                            <div class="gr-detail-block-text">${car.description || "Sem descrição disponível"}</div>
+                        </div>
+                        ${
+                          car.historicalNotes
+                            ? `
+                        <div class="gr-history-block">
+                            <div class="gr-history-label">Histórico</div>
+                            <div class="gr-history-text">${car.historicalNotes}</div>
+                        </div>
+                        `
+                            : ""
+                        }
+                        ${
+                          car.variants && car.variants.length > 0
+                            ? `
+                        <div class="gr-detail-block">
+                            <div class="gr-detail-block-label">Variantes</div>
+                            <div class="gr-detail-block-text">${car.variants.join(", ")}</div>
+                        </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+
+                <!-- REPAIR BOX -->
                 ${repairBlock}
 
                 <div class="gr-actions">
@@ -513,6 +604,30 @@ class GarageScreen {
 
       // Delegação de Eventos na Sidebar para garantir que o clique funciona
       sidebar.onclick = (e) => {
+        // TAB SWITCHING
+        if (e.target.closest(".gr-tab-btn")) {
+          const tabName =
+            e.target.dataset.tab || e.target.closest(".gr-tab-btn").dataset.tab;
+
+          // Deactivate all tabs
+          sidebar
+            .querySelectorAll(".gr-tab-btn")
+            .forEach((btn) => btn.classList.remove("active"));
+          sidebar
+            .querySelectorAll(".gr-tab-content")
+            .forEach((content) => content.classList.remove("active"));
+
+          // Activate selected tab
+          e.target.closest(".gr-tab-btn").classList.add("active");
+          const tabContent = sidebar.querySelector(`[data-tab="${tabName}"]`);
+          if (tabContent) {
+            tabContent.classList.add("active");
+          }
+          e.stopPropagation();
+          return;
+        }
+
+        // OTHER EVENT HANDLERS
         if (e.target.closest("#gr-pm-open-btn")) {
           this.openPhotoMode();
         } else if (e.target.closest("#gr-back-filter-btn")) {
@@ -569,9 +684,12 @@ class GarageScreen {
            </div>
            
            <button class="gr-fav-btn ${car.isFavorite ? "active" : ""}" title="Favoritar">⭐</button>
-           
-           <div class="gr-icon" style="color: ${car.color || "#fff"}">${car.icon || "🚗"}</div>
-           
+
+           <div class="gr-image-card">
+              ${car.imageUrl ? `<img src="${car.imageUrl}" alt="${car.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ""}
+              <div class="gr-icon-fallback" style="color: ${car.color || "#fff"}; display: ${car.imageUrl ? "none" : "flex"}">${car.icon || "🚗"}</div>
+           </div>
+
            <div class="gr-info">
               <h3>${car.name}</h3>
            </div>
@@ -667,12 +785,23 @@ class GarageScreen {
     if (!car) return;
 
     document.getElementById("gr-photo-mode").style.display = "flex";
-    document.getElementById("gr-pm-icon").innerText = car.icon || "🚗";
-    document.getElementById("gr-pm-icon").style.color = car.color || "#fff";
-    document.getElementById("gr-pm-title").innerText = car.name;
-    document.getElementById("gr-pm-subtitle").innerText =
-      `${car.year} | ${car.id ? "PERSONALIZADO" : "DE FÁBRICA"} | ${car.power} HP`;
 
+    // Display car image or emoji fallback
+    const pmIconEl = document.getElementById("gr-pm-icon");
+    if (car.imageUrl) {
+      pmIconEl.innerHTML = `<img src="${car.imageUrl}" alt="${car.name}" style="width: 300px; height: 300px; object-fit: cover; border-radius: 12px;" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\\'font-size:15rem; color: ${car.color || "#fff"}\\'>🚗</div>')">`;
+    } else {
+      pmIconEl.innerText = car.icon || "🚗";
+      pmIconEl.style.color = car.color || "#fff";
+    }
+
+    document.getElementById("gr-pm-title").innerText = car.name;
+
+    // Enhanced subtitle with more info
+    document.getElementById("gr-pm-subtitle").innerText =
+      `${car.year} | ${(car.engineType || "N/A").toUpperCase()} | ${car.power} HP | ${car.topSpeed || "N/A"} km/h`;
+
+    // Parts display (unchanged)
     const pContainer = document.getElementById("gr-pm-parts");
     pContainer.innerHTML = "";
 

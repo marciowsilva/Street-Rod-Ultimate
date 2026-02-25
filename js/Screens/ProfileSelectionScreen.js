@@ -424,7 +424,7 @@ class ProfileSelectionScreen {
         .ps-card h3 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: white; }
         .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
         
-        .ps-stats-row { display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; }
         .ps-stat { display: flex; flex-direction: column; }
         .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; }
         .ps-value { font-size: 1.1rem; font-weight: 800; color: white; }
