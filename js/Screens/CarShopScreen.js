@@ -80,7 +80,9 @@ class CarShopScreen {
         }
 
         .nav-btn {
-          position: relative;
+          position: absolute;
+          top: 30px;
+          left: 30px;
           background: transparent;
           border: 1px solid rgba(255,255,255,0.2);
           color: white;
@@ -91,8 +93,6 @@ class CarShopScreen {
           border-radius: 6px;
           transition: all 0.3s;
           z-index: 100;
-          align-self: flex-start;
-          margin-bottom: 20px;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
 
@@ -410,9 +410,9 @@ class CarShopScreen {
 
       <div class="cs-overlay"></div>
 
-      <div class="cs-content">
-        <button id="cs-back-btn" class="nav-btn">← VOLTAR</button>
+      <button id="cs-back-btn" class="nav-btn">← VOLTAR</button>
 
+      <div class="cs-content">
         <div class="cs-header">
           <div class="cs-title">
             <h1>AGÊNCIA <span style="color: #00ff88;">PREMIUM</span></h1>
