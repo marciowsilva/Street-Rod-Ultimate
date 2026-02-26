@@ -13,6 +13,18 @@
     }
 }
 
+@keyframes anim-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes glow {
 
     0%,
@@ -55,6 +67,10 @@
 
 .fade-in-up {
     animation: fadeInUp 0.5s ease;
+}
+
+.anim-fade-up {
+    animation: anim-fade-up 0.5s ease;
 }
 
 .glow-text {

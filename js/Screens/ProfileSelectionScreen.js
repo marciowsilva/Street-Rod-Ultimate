@@ -425,9 +425,9 @@ class ProfileSelectionScreen {
         .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
 
         .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; gap: 20px; }
-        .ps-stat { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
-        .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; letter-spacing: 1px; }
-        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; background: none !important; padding: 0 !important; line-height: 1.2; }
+        .ps-stat { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; flex: 1; }
+        .ps-label { font-size: 0.75rem; color: #888; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .ps-value { font-size: 1.2rem; font-weight: 800; color: white; background: none !important; padding: 0 !important; line-height: 1.2; }
         .ps-value.money { color: #2ecc71; background: none !important; padding: 0 !important; }
 
         .ps-actions { 

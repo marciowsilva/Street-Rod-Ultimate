@@ -112,34 +112,44 @@ class CarShopScreen {
         .cs-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start;
           margin-bottom: 30px;
           border-bottom: 1px solid rgba(255,255,255,0.1);
           padding-bottom: 20px;
+          gap: 30px;
         }
 
         .cs-title {
-          margin-left: 0;
+          margin-left: 100px;
         }
 
         .cs-title h1 {
-          font-size: 3rem;
+          font-size: 2.5rem;
           margin: 0;
           color: #fff;
           text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-          letter-spacing: 5px;
+          letter-spacing: 3px;
         }
         .cs-title span { color: #00ff88; }
 
+        .cs-title > div {
+          font-size: 0.9rem;
+          color: #666;
+          letter-spacing: 1px;
+          margin-top: 5px;
+        }
+
         .cs-wallet {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           color: #00ff88;
           font-weight: 700;
           text-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
           background: rgba(0,0,0,0.5);
-          padding: 10px 25px;
+          padding: 12px 25px;
           border-radius: 50px;
           border: 1px solid rgba(0, 255, 136, 0.3);
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         /* Sidebar */
@@ -230,7 +240,7 @@ class CarShopScreen {
         .car-card-image {
           width: 100%;
           height: 180px;
-          background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+          background: #000;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -242,6 +252,7 @@ class CarShopScreen {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          display: block;
         }
 
         .car-card-badge {
@@ -380,7 +391,7 @@ class CarShopScreen {
         .modal-image {
           width: 100%;
           height: 300px;
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+          background: #000;
           border-radius: 8px;
           margin-bottom: 20px;
           display: flex;
@@ -393,6 +404,7 @@ class CarShopScreen {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          display: block;
         }
       </style>
 
@@ -466,7 +478,7 @@ class CarShopScreen {
       const badgeText = car.condition === "new" ? "NOVO" : "USADO";
 
       const imageHtml = car.imageUrl
-        ? `<img src="${car.imageUrl}" alt="${car.name}" onerror="this.style.display='none'">`
+        ? `<img src="${car.imageUrl}" alt="${car.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:3rem&quot;>${car.icon}</div>'">`
         : `<div style="font-size:3rem">${car.icon}</div>`;
 
       card.innerHTML = `
@@ -505,8 +517,8 @@ class CarShopScreen {
     const content = document.getElementById("car-modal-content");
 
     const imageHtml = car.imageUrl
-      ? `<img src="${car.imageUrl}" alt="${car.name}" onerror="this.style.display='none'">`
-      : `<div style="font-size:3rem">${car.icon}</div>`;
+      ? `<img src="${car.imageUrl}" alt="${car.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%&quot;>${car.icon}</div>'">`
+      : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%">${car.icon}</div>`;
 
     const canAfford = this.profile && this.profile.cash >= car.price;
 
