@@ -125,28 +125,28 @@ class CarShopScreen {
         }
 
         .cs-title h1 {
-          font-size: 2.5rem;
+          font-size: 3rem;
           margin: 0;
           color: #fff;
           text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-          letter-spacing: 3px;
+          letter-spacing: 5px;
         }
         .cs-title span { color: #00ff88; }
 
-        .cs-title > div {
-          font-size: 0.9rem;
-          color: #666;
-          letter-spacing: 1px;
-          margin-top: 5px;
+        .cs-count {
+          font-size: 1rem;
+          color: #888;
+          letter-spacing: 2px;
+          margin-top: 0;
         }
 
         .cs-wallet {
-          font-size: 1.3rem;
+          font-size: 2rem;
           color: #00ff88;
           font-weight: 700;
           text-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
           background: rgba(0,0,0,0.5);
-          padding: 12px 25px;
+          padding: 10px 25px;
           border-radius: 50px;
           border: 1px solid rgba(0, 255, 136, 0.3);
           white-space: nowrap;
@@ -417,7 +417,7 @@ class CarShopScreen {
         <div class="cs-header">
           <div class="cs-title">
             <h1>AGÊNCIA <span style="color: #00ff88;">PREMIUM</span></h1>
-            <div style="font-size: 0.9rem; color: #666; letter-spacing: 1px;">VEÍCULOS REAIS</div>
+            <div class="cs-count">VEÍCULOS REAIS</div>
           </div>
 
           <div class="cs-wallet">
