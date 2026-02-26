@@ -112,7 +112,7 @@ class CarShopScreen {
         .cs-header {
           display: flex;
           justify-content: space-between;
-          align-items: flex-start;
+          align-items: center;
           margin-bottom: 30px;
           border-bottom: 1px solid rgba(255,255,255,0.1);
           padding-bottom: 20px;
@@ -121,6 +121,7 @@ class CarShopScreen {
 
         .cs-title {
           flex: 1;
+          margin-left: 100px;
         }
 
         .cs-title h1 {
