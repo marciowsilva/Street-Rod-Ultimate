@@ -424,11 +424,11 @@ class ProfileSelectionScreen {
         .ps-card h3 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: white; }
         .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
 
-        .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; }
-        .ps-stat { display: flex; flex-direction: column; }
-        .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; }
-        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; }
-        .ps-value.money { color: #2ecc71; }
+        .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; gap: 20px; }
+        .ps-stat { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+        .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; letter-spacing: 1px; }
+        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; background: none !important; padding: 0 !important; line-height: 1.2; }
+        .ps-value.money { color: #2ecc71; background: none !important; padding: 0 !important; }
 
         .ps-actions { 
             display: flex; gap: 10px; margin-top: 10px; opacity: 0; transition: 0.3s;
