@@ -7,36 +7,25 @@ const CARS_DATABASE = {
       name: "Fusca 1500 DX",
       year: 1970,
       icon: "🐞",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/1971VW1200Beetle.JPG/800px-1971VW1200Beetle.JPG",
+      imageUrl: "./assets/cars/fusca-1500.jpg",
       vehicleType: "classic",
       engineType: "inline4",
       driveType: "rwd",
       condition: "new",
       color: "#f1c40f",
-
-      // Performance
       power: 50,
       torque: 87,
       weight: 785,
       handling: 2,
       acceleration: 12.5,
       topSpeed: 160,
-
-      // Technical
       displacement: 1493,
       cylinders: 4,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 8500,
-
-      // Description & History
-      description:
-        "O icônico Fusca 1500 DX, carro que marcou gerações de brasileiros",
-      historicalNotes:
-        "Produzido de 1968-1986 no Brasil, o Fusca foi o carro mais vendido no mundo até 2003",
+      description: "O icônico Fusca 1500 DX, carro que marcou gerações de brasileiros",
+      historicalNotes: "Produzido de 1968-1986 no Brasil, o Fusca foi o carro mais vendido no mundo até 2003",
       variants: ["1200", "1300", "1500", "Super"],
       productionYears: "1968-1986",
       category: "classic",
@@ -48,36 +37,25 @@ const CARS_DATABASE = {
       name: "Chevrolet Opala SS",
       year: 1974,
       icon: "🦁",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Chevrolet_Opala_1974.jpg/800px-Chevrolet_Opala_1974.jpg",
+      imageUrl: "./assets/cars/opala-ss.jpg",
       vehicleType: "muscle",
       engineType: "inline6",
       driveType: "rwd",
       condition: "new",
       color: "#e74c3c",
-
-      // Performance
       power: 171,
       torque: 293,
       weight: 1350,
       handling: 3,
       acceleration: 9.8,
       topSpeed: 210,
-
-      // Technical
       displacement: 3800,
       cylinders: 6,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 25000,
-
-      // Description & History
-      description:
-        "Opala SS 1974, o lendário carro de rua e policial brasileiro",
-      historicalNotes:
-        "Icone dos anos 70-80, usado extensivamente como carro de polícia no Brasil",
+      description: "Opala SS 1974, o lendário carro de rua e policial brasileiro",
+      historicalNotes: "Icone dos anos 70-80, usado extensivamente como carro de polícia no Brasil",
       variants: ["Standard", "Luxo", "SS", "Caravan"],
       productionYears: "1969-1992",
       category: "classic",
@@ -89,35 +67,25 @@ const CARS_DATABASE = {
       name: "Ford Maverick GT",
       year: 1972,
       icon: "🐴",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ford_Maverick_front_4.28.19.jpg/800px-Ford_Maverick_front_4.28.19.jpg",
+      imageUrl: "./assets/cars/maverick-gt.jpg",
       vehicleType: "muscle",
       engineType: "inline6",
       driveType: "rwd",
       condition: "new",
       color: "#e67e22",
-
-      // Performance
       power: 161,
       torque: 274,
       weight: 1260,
       handling: 3,
       acceleration: 10.2,
       topSpeed: 205,
-
-      // Technical
       displacement: 3800,
       cylinders: 6,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 23000,
-
-      // Description & History
       description: "Ford Maverick GT 1972, o rival americano do Opala",
-      historicalNotes:
-        "Importado em quantidade limitada para o Brasil, considerado mais raro que o Opala",
+      historicalNotes: "Importado em quantidade limitada para o Brasil, considerado mais raro que o Opala",
       variants: ["Standard", "GT", "Maverick Rancho"],
       productionYears: "1969-1977",
       category: "classic",
@@ -129,36 +97,25 @@ const CARS_DATABASE = {
       name: "Chevrolet Chevette",
       year: 1978,
       icon: "🐛",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/CHEVROLET_CHEVETTE_1978.jpg/800px-CHEVROLET_CHEVETTE_1978.jpg",
+      imageUrl: "./assets/cars/chevette.jpg",
       vehicleType: "classic",
       engineType: "inline4",
       driveType: "rwd",
       condition: "new",
       color: "#2ecc71",
-
-      // Performance
       power: 82,
       torque: 142,
       weight: 950,
       handling: 3,
       acceleration: 11.5,
       topSpeed: 180,
-
-      // Technical
       displacement: 1596,
       cylinders: 4,
       transmission: "Manual 5-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 12500,
-
-      // Description & History
-      description:
-        "Chevrolet Chevette 1978, o compacto econômico que conquistou o Brasil",
-      historicalNotes:
-        "Produzido de 1973-1994, foi a base para modificações e preparações populares",
+      description: "Chevrolet Chevette 1978, o compacto econômico que conquistou o Brasil",
+      historicalNotes: "Produzido de 1973-1994, foi a base para modificações e preparações populares",
       variants: ["Base", "DL", "SE"],
       productionYears: "1973-1994",
       category: "classic",
@@ -173,36 +130,25 @@ const CARS_DATABASE = {
       name: "Pontiac GTO 'The Judge'",
       year: 1970,
       icon: "⚖️",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Pontiac_GTO_1970.jpg/800px-Pontiac_GTO_1970.jpg",
+      imageUrl: "./assets/cars/pontiac-gto.jpg",
       vehicleType: "muscle",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#8e44ad",
-
-      // Performance
       power: 366,
       torque: 520,
       weight: 1400,
       handling: 2,
       acceleration: 6.0,
       topSpeed: 240,
-
-      // Technical
       displacement: 6558,
       cylinders: 8,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 42000,
-
-      // Description & History
-      description:
-        "Pontiac GTO 1970, o carro que popularizou o conceito de 'muscle car'",
-      historicalNotes:
-        "'The Judge' era a versão mais radical, conhecida como 'The Judge can't convict'",
+      description: "Pontiac GTO 1970, o carro que popularizou o conceito de 'muscle car'",
+      historicalNotes: "'The Judge' era a versão mais radical, conhecida como 'The Judge can't convict'",
       variants: ["Base", "Judge", "The Judge RAM Air"],
       productionYears: "1964-1974",
       category: "muscle",
@@ -214,35 +160,25 @@ const CARS_DATABASE = {
       name: "Dodge Charger R/T",
       year: 1969,
       icon: "⚡",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/1969_Dodge_Charger_R_T_-_Tangerine.jpg/800px-1969_Dodge_Charger_R_T_-_Tangerine.jpg",
+      imageUrl: "./assets/cars/dodge-charger.jpg",
       vehicleType: "muscle",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#ff6b3d",
-
-      // Performance
       power: 375,
       torque: 540,
       weight: 1470,
       handling: 2,
       acceleration: 5.9,
       topSpeed: 245,
-
-      // Technical
       displacement: 6979,
       cylinders: 8,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 45000,
-
-      // Description & History
       description: "Dodge Charger R/T 1969, o icone dos muscle cars americanos",
-      historicalNotes:
-        "Famoso por ser perseguido na série de TV 'Dukes of Hazzard' (1969-1970)",
+      historicalNotes: "Famoso por ser perseguido na série de TV 'Dukes of Hazzard' (1969-1970)",
       variants: ["Base", "R/T", "Super Bee"],
       productionYears: "1966-1974",
       category: "muscle",
@@ -254,35 +190,25 @@ const CARS_DATABASE = {
       name: "Chevrolet Chevelle SS 454",
       year: 1970,
       icon: "💪",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/1970_Chevrolet_Chevelle_SS_454.jpg/800px-1970_Chevrolet_Chevelle_SS_454.jpg",
+      imageUrl: "./assets/cars/chevelle-ss454.jpg",
       vehicleType: "muscle",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#34495e",
-
-      // Performance
       power: 450,
       torque: 590,
       weight: 1520,
       handling: 2,
       acceleration: 5.5,
       topSpeed: 260,
-
-      // Technical
       displacement: 7439,
       cylinders: 8,
       transmission: "Manual 4-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 48000,
-
-      // Description & History
       description: "Chevrolet Chevelle SS 454 1970, poder bruto dos anos 70",
-      historicalNotes:
-        "Um dos motores mais potentes já instalados em um carro de passeio",
+      historicalNotes: "Um dos motores mais potentes já instalados em um carro de passeio",
       variants: ["SS", "SS 396", "SS 454"],
       productionYears: "1964-1977",
       category: "muscle",
@@ -297,35 +223,25 @@ const CARS_DATABASE = {
       name: "Hot Rod Tradicional",
       year: 1932,
       icon: "🔥",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/HotRodMercury.jpg/800px-HotRodMercury.jpg",
+      imageUrl: "./assets/cars/hotrod-traditional.jpg",
       vehicleType: "hotrod",
       engineType: "v8",
       driveType: "rwd",
       condition: "used",
       color: "#c0392b",
-
-      // Performance
       power: 350,
       torque: 450,
       weight: 900,
       handling: 3,
       acceleration: 5.8,
       topSpeed: 250,
-
-      // Technical
       displacement: 5735,
       cylinders: 8,
       transmission: "Manual 3-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 35000,
-
-      // Description & History
       description: "Hot Rod Tradicional customizado, pura adrenalina",
-      historicalNotes:
-        "Baseado no Ford Model T dos anos 1920-30, modificado com motor V8 potente",
+      historicalNotes: "Baseado no Ford Model T dos anos 1920-30, modificado com motor V8 potente",
       variants: ["Street Rod", "Show Rod", "Drag Rod"],
       productionYears: "Custom build",
       category: "hotrod",
@@ -337,35 +253,25 @@ const CARS_DATABASE = {
       name: "Show Rod Chrome King",
       year: 1934,
       icon: "👑",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Show_Rod_at_The_Quail_Motorsports_Gathering.jpg/800px-Show_Rod_at_The_Quail_Motorsports_Gathering.jpg",
+      imageUrl: "./assets/cars/showrod-chrome-king.jpg",
       vehicleType: "hotrod",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#2c3e50",
-
-      // Performance
       power: 400,
       torque: 520,
       weight: 950,
       handling: 3,
       acceleration: 5.2,
       topSpeed: 270,
-
-      // Technical
       displacement: 6500,
       cylinders: 8,
       transmission: "Automatic 2-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 55000,
-
-      // Description & History
       description: "Show Rod Chrome King, obra-prima de customização",
-      historicalNotes:
-        "Um carro de show completamente customizado, mais para galeria que para rua",
+      historicalNotes: "Um carro de show completamente customizado, mais para galeria que para rua",
       variants: ["Street", "Show", "Track"],
       productionYears: "Custom build",
       category: "hotrod",
@@ -380,35 +286,25 @@ const CARS_DATABASE = {
       name: "Chevrolet Camaro SS",
       year: 2010,
       icon: "🏁",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/2010_Chevrolet_Camaro_SS.jpg/800px-2010_Chevrolet_Camaro_SS.jpg",
+      imageUrl: "./assets/cars/camaro-ss.jpg",
       vehicleType: "muscle",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#f39c12",
-
-      // Performance
       power: 426,
       torque: 620,
       weight: 1530,
       handling: 4,
       acceleration: 5.8,
       topSpeed: 260,
-
-      // Technical
       displacement: 6162,
       cylinders: 8,
       transmission: "Manual 6-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 38000,
-
-      // Description & History
       description: "Chevrolet Camaro SS 2010, muscle car moderno",
-      historicalNotes:
-        "Ressurreição do lendário Camaro, primeira geração moderna desde 2002",
+      historicalNotes: "Ressurreição do lendário Camaro, primeira geração moderna desde 2002",
       variants: ["Base", "SS", "ZL1"],
       productionYears: "2010-2015",
       category: "modern",
@@ -420,32 +316,23 @@ const CARS_DATABASE = {
       name: "Ford Mustang GT",
       year: 2011,
       icon: "🐎",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/2011_Ford_Mustang_GT.jpg/800px-2011_Ford_Mustang_GT.jpg",
+      imageUrl: "./assets/cars/mustang-gt.jpg",
       vehicleType: "muscle",
       engineType: "v8",
       driveType: "rwd",
       condition: "new",
       color: "#c0392b",
-
-      // Performance
       power: 412,
       torque: 610,
       weight: 1540,
       handling: 4,
       acceleration: 5.9,
       topSpeed: 255,
-
-      // Technical
       displacement: 5982,
       cylinders: 8,
       transmission: "Manual 5-speed",
       fuelType: "Gasoline",
-
-      // Price
       price: 37000,
-
-      // Description & History
       description: "Ford Mustang GT 2011, o carro americano mais icônico",
       historicalNotes: "Continua a herança de 47 anos do Mustang desde 1964",
       variants: ["Base", "GT", "GT500"],

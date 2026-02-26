@@ -423,7 +423,7 @@ class ProfileSelectionScreen {
 
         .ps-card h3 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: white; }
         .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
-        
+
         .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; }
         .ps-stat { display: flex; flex-direction: column; }
         .ps-label { font-size: 0.6rem; color: #888; font-weight: 700; }
