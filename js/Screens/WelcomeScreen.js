@@ -1,32 +1,29 @@
 // WelcomeScreen.js - VERSÃO SIMPLIFICADA
-console.log('🎬 Carregando WelcomeScreen...');
+// WelcomeScreen.js - VERSÃO SIMPLIFICADA
 
 class WelcomeScreen {
-    constructor(eventSystem) {
-        console.log('🏗️  Criando WelcomeScreen');
-        this.eventSystem = eventSystem;
-        this.isVisible = false;
+  constructor(eventSystem) {
+    this.eventSystem = eventSystem;
+    this.isVisible = false;
+  }
+
+  show(data = {}) {
+    this.isVisible = true;
+
+    // Carregar perfis após mostrar
+    if (this.eventSystem && this.eventSystem.loadSavedProfilesList) {
+      setTimeout(() => {
+        this.eventSystem.loadSavedProfilesList();
+      }, 50);
     }
-    
-    show(data = {}) {
-        console.log('🖥️ Mostrando WelcomeScreen');
-        this.isVisible = true;
-        
-        // Carregar perfis após mostrar
-        if (this.eventSystem && this.eventSystem.loadSavedProfilesList) {
-            setTimeout(() => {
-                this.eventSystem.loadSavedProfilesList();
-            }, 50);
-        }
-    }
-    
-    hide() {
-        console.log('👋 Escondendo WelcomeScreen');
-        this.isVisible = false;
-    }
-    
-    render() {
-        return `
+  }
+
+  hide() {
+    this.isVisible = false;
+  }
+
+  render() {
+    return `
             <div class="welcome-screen" style="
                 width: 100%;
                 height: 100vh;
@@ -153,74 +150,71 @@ class WelcomeScreen {
                 </div>
             </div>
         `;
-    }
-    
-    attachEvents() {
-        console.log('🔗 Anexando eventos da WelcomeScreen');
-        
-        // Botão Criar Novo Perfil
-        const newProfileBtn = document.getElementById('new-profile-btn');
-        if (newProfileBtn && this.eventSystem) {
-            newProfileBtn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (this.eventSystem.showProfileCreationModal) {
-                    this.eventSystem.showProfileCreationModal();
-                } else {
-                    const name = prompt('Digite seu nome:');
-                    if (name && name.trim()) {
-                        this.eventSystem.createProfile(name.trim());
-                    }
-                }
-            };
-            
-            // Efeito hover
-            newProfileBtn.addEventListener('mouseenter', () => {
-                newProfileBtn.style.transform = 'scale(1.02)';
-                newProfileBtn.style.boxShadow = '0 5px 20px rgba(255, 71, 87, 0.4)';
-            });
-            
-            newProfileBtn.addEventListener('mouseleave', () => {
-                newProfileBtn.style.transform = 'scale(1)';
-                newProfileBtn.style.boxShadow = 'none';
-            });
+  }
+
+  attachEvents() {
+    // Botão Criar Novo Perfil
+    const newProfileBtn = document.getElementById("new-profile-btn");
+    if (newProfileBtn && this.eventSystem) {
+      newProfileBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.eventSystem.showProfileCreationModal) {
+          this.eventSystem.showProfileCreationModal();
+        } else {
+          const name = prompt("Digite seu nome:");
+          if (name && name.trim()) {
+            this.eventSystem.createProfile(name.trim());
+          }
         }
-        
-        // Botão Início Rápido
-        const quickStartBtn = document.getElementById('quick-start-btn');
-        if (quickStartBtn && this.eventSystem) {
-            quickStartBtn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Gerar nome único
-                const names = ['Racer', 'Driver', 'Speedster', 'Champion', 'Pro'];
-                const randomName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 100);
-                
-                if (this.eventSystem.createProfile) {
-                    this.eventSystem.createProfile(randomName);
-                }
-            };
-            
-            // Efeito hover
-            quickStartBtn.addEventListener('mouseenter', () => {
-                quickStartBtn.style.transform = 'scale(1.02)';
-                quickStartBtn.style.boxShadow = '0 5px 20px rgba(30, 144, 255, 0.4)';
-            });
-            
-            quickStartBtn.addEventListener('mouseleave', () => {
-                quickStartBtn.style.transform = 'scale(1)';
-                quickStartBtn.style.boxShadow = 'none';
-            });
-        }
-        
-        console.log('✅ Eventos da WelcomeScreen anexados');
+      };
+
+      // Efeito hover
+      newProfileBtn.addEventListener("mouseenter", () => {
+        newProfileBtn.style.transform = "scale(1.02)";
+        newProfileBtn.style.boxShadow = "0 5px 20px rgba(255, 71, 87, 0.4)";
+      });
+
+      newProfileBtn.addEventListener("mouseleave", () => {
+        newProfileBtn.style.transform = "scale(1)";
+        newProfileBtn.style.boxShadow = "none";
+      });
     }
+
+    // Botão Início Rápido
+    const quickStartBtn = document.getElementById("quick-start-btn");
+    if (quickStartBtn && this.eventSystem) {
+      quickStartBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Gerar nome único
+        const names = ["Racer", "Driver", "Speedster", "Champion", "Pro"];
+        const randomName =
+          names[Math.floor(Math.random() * names.length)] +
+          Math.floor(Math.random() * 100);
+
+        if (this.eventSystem.createProfile) {
+          this.eventSystem.createProfile(randomName);
+        }
+      };
+
+      // Efeito hover
+      quickStartBtn.addEventListener("mouseenter", () => {
+        quickStartBtn.style.transform = "scale(1.02)";
+        quickStartBtn.style.boxShadow = "0 5px 20px rgba(30, 144, 255, 0.4)";
+      });
+
+      quickStartBtn.addEventListener("mouseleave", () => {
+        quickStartBtn.style.transform = "scale(1)";
+        quickStartBtn.style.boxShadow = "none";
+      });
+    }
+  }
 }
 
 // Exportar
-if (typeof window !== 'undefined') {
-    window.WelcomeScreen = WelcomeScreen;
-    console.log('✅ WelcomeScreen exportada');
+if (typeof window !== "undefined") {
+  window.WelcomeScreen = WelcomeScreen;
 }

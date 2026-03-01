@@ -1,5 +1,4 @@
 // bootstrap.js - Inicialização à prova de falhas
-console.log("🚀 BOOTSTRAP - Inicializando Street Rod II...");
 
 // Configuração global
 window.game = window.game || {
@@ -18,9 +17,7 @@ function loadScript(src) {
   return new Promise((resolve, reject) => {
     // Verificar se já foi carregado
     if (loadedScripts.has(src)) {
-      console.log(`⏭️ ${src} já foi carregado anteriormente, pulando...`);
-      resolve();
-      return;
+      // Script já carregado
     }
 
     // Verificar se já existe no DOM
@@ -29,21 +26,21 @@ function loadScript(src) {
     ).find((s) => s.src.includes(src.split("/").pop()));
 
     if (existingScript) {
-      console.log(`⏭️ ${src} já existe no DOM, pulando...`);
-      loadedScripts.add(src);
+      // Script já no DOM
       resolve();
       return;
     }
 
-    console.log(`📦 Carregando: ${src}`);
+    // Carregando script
 
     const script = document.createElement("script");
     script.src = src;
     script.onload = () => {
-      console.log(`✅ ${src} carregado`);
+      // Carregado
       loadedScripts.add(src);
       resolve();
     };
+
     script.onerror = () => {
       console.error(`❌ Falha ao carregar: ${src}`);
       reject(new Error(`Falha ao carregar ${src}`));
@@ -55,7 +52,7 @@ function loadScript(src) {
 
 // Função para inicializar o sistema
 async function initializeSystem() {
-  console.log("🎮 Inicializando sistema...");
+  // Inicializando sistema
 
   try {
     // 1. Carregar scripts essenciais se não estiverem carregados
@@ -96,12 +93,7 @@ async function initializeSystem() {
       const hasInstance = instanceCheck ? window[instanceCheck] : false;
 
       // Se já tem a instância, não precisa carregar novamente
-      if (hasInstance) {
-        console.log(
-          `⏭️ ${script} já tem instância (${instanceCheck}), pulando carregamento...`,
-        );
-        continue;
-      }
+      // Já tem instância
 
       // Tentar carregar (a função loadScript já verifica duplicação)
       await loadScript(script);
@@ -118,7 +110,7 @@ async function initializeSystem() {
     }
 
     // 3. Registrar todas as telas
-    console.log("📺 Registrando telas...");
+    // Registrando telas
 
     const screens = [
       { id: "main-menu", instance: window.mainMenuScreen },
@@ -136,14 +128,14 @@ async function initializeSystem() {
     screens.forEach((screen) => {
       if (screen.instance) {
         window.eventSystem.registerScreen(screen.id, screen.instance);
-        console.log(`   ✅ ${screen.id}`);
+        // Tela registrada
       } else {
         console.warn(`   ⚠️ ${screen.id} não disponível`);
       }
     });
 
     // 4. Esconder loading
-    console.log("🎯 Escondendo loading...");
+    // Escondendo loading
     const loadingScreen = document.getElementById("loading-screen");
     if (loadingScreen) {
       loadingScreen.style.opacity = "0";
@@ -151,7 +143,7 @@ async function initializeSystem() {
 
       setTimeout(() => {
         loadingScreen.style.display = "none";
-        console.log("✅ Loading escondido");
+        // Loading escondido
 
         // 5. Mostrar tela apropriada
         showFirstScreen();
@@ -162,7 +154,7 @@ async function initializeSystem() {
     }
 
     window.game.isInitialized = true;
-    console.log("✅ Sistema inicializado com sucesso!");
+    // Sistema inicializado
   } catch (error) {
     console.error("❌ Erro na inicialização:", error);
     showErrorScreen(`Erro: ${error.message}`);
@@ -170,7 +162,7 @@ async function initializeSystem() {
 }
 
 function showFirstScreen() {
-  console.log("🔍 Decidindo primeira tela...");
+  // Decidindo primeira tela
 
   let targetScreen = "profile-selection";
 
@@ -178,18 +170,15 @@ function showFirstScreen() {
   if (window.profileManager) {
     const profiles = window.profileManager.getAllProfiles();
 
-    console.log(`📊 ${profiles.length} perfil(s) encontrado(s)`);
+    // Perfis encontrados
 
     // Sempre mostrar seleção de perfis para garantir consistência
     // A tela de seleção já lida com o estado vazio e convida à criação
     targetScreen = "profile-selection";
 
-    // Limpar perfil atual para forçar seleção manual e evitar login automático confuso
     const currentProfile = window.profileManager.getCurrentProfile();
     if (currentProfile) {
-      console.log(
-        `🔄 Limpando perfil atual (${currentProfile.name}) para mostrar seleção`,
-      );
+      // Limpando perfil atual para seleção
       localStorage.removeItem("streetrod2_current_profile");
       localStorage.removeItem("sr2_currentProfile");
       window.currentProfile = null;
@@ -197,11 +186,11 @@ function showFirstScreen() {
     }
   }
 
-  console.log(`🎯 Mostrando: ${targetScreen}`);
+  // Mostrando tela alvo
 
   // Mostrar tela
   if (window.eventSystem.showScreen(targetScreen)) {
-    console.log(`✅ Tela ${targetScreen} mostrada`);
+    // Tela mostrada
   } else {
     console.error(`❌ Falha ao mostrar ${targetScreen}`);
 
@@ -269,11 +258,11 @@ function showErrorScreen(message) {
 // Iniciar quando o DOM estiver pronto
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
-    console.log("📦 DOM carregado, iniciando bootstrap...");
+    // DOM carregado
     setTimeout(initializeSystem, 100);
   });
 } else {
-  console.log("⚡ DOM já carregado, iniciando imediatamente...");
+  // DOM já carregado
   setTimeout(initializeSystem, 100);
 }
 
@@ -299,4 +288,4 @@ window.getCarImageURL = function (car) {
   return `assets/cars/${fileName}`;
 };
 
-console.log("✅ Bootstrap carregado e pronto");
+// Bootstrap pronto

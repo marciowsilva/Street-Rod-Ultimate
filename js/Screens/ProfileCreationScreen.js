@@ -1,5 +1,4 @@
 // ProfileCreationScreen.js - VERSÃO PREMIUM HUD
-console.log("🆕 [ProfileCreationScreen] Carregando versão visual premium...");
 
 class ProfileCreationScreen {
   constructor() {
@@ -7,7 +6,7 @@ class ProfileCreationScreen {
   }
 
   initialize() {
-    console.log("🆕 [ProfileCreationScreen] Inicializando HUD premium...");
+    // Inicializando HUD premium
     this.createScreen();
     this.attachEvents();
     return true;

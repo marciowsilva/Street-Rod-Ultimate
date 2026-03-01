@@ -1,5 +1,5 @@
 // TuningScreen.js - OFICINA/TUNING (Sistema de Instalação de Peças)
-console.log("🔧 Carregando TuningScreen...");
+// TuningScreen.js - OFICINA/TUNING (Sistema de Instalação de Peças)
 
 class TuningScreen {
   constructor(eventSystem) {
@@ -10,7 +10,7 @@ class TuningScreen {
   }
 
   show(data = {}) {
-    console.log("🔧 Abrindo Oficina de Tuning");
+    // Abrindo Oficina de Tuning
     this.isActive = true;
     this.vehicleIndex = data.vehicleIndex ?? null;
 
@@ -28,23 +28,20 @@ class TuningScreen {
   }
 
   hide() {
-    console.log("🔧 Escondendo TuningScreen");
+    // Escondendo TuningScreen
     this.isActive = false;
     const container = document.getElementById("tuning-container");
     if (container) {
-      console.log("🗑️ Removendo tuning-container");
       container.remove();
     }
 
     const style = document.getElementById("tuning-styles");
     if (style) {
-      console.log("🗑️ Removendo tuning-styles");
       style.remove();
     }
   }
 
   cleanup() {
-    console.log("🧹 Limpando TuningScreen (cleanup)");
     this.hide();
   }
 
@@ -476,11 +473,7 @@ class TuningScreen {
   }
 
   isPartCompatible(part, vehicle) {
-    console.log(
-      `🔍 Verificando compatibilidade: ${part.name} em ${vehicle.name}`,
-    );
-
-    // Se a peça não tem restrições, é universal
+    // Verificando compatibilidade
     if (!part.compatibleWith) {
       console.log("✅ Peça universal - compatível");
       return true;
@@ -635,9 +628,7 @@ class TuningScreen {
       return;
     }
 
-    console.log(`🔧 Instalando ${part.name}...`);
-    console.log(`📊 Potência ANTES: ${this.currentVehicle.power} HP`);
-
+    // Instalando peça
     // Aplicar upgrades DIRETAMENTE no veículo do array do perfil
     const slot = part.slot || "generic";
 
@@ -665,7 +656,6 @@ class TuningScreen {
     // Salvar perfil ANTES de atualizar UI
     if (window.profileManager) {
       const saved = window.profileManager.saveProfile(this.profile);
-      console.log(`💾 Perfil salvo: ${saved}`);
 
       // Forçar reload do currentProfile no ProfileManager
       window.profileManager.currentProfile =
@@ -721,5 +711,4 @@ class TuningScreen {
 if (typeof window !== "undefined") {
   window.tuningScreen = new TuningScreen(window.eventSystem);
   window.TuningScreen = TuningScreen;
-  console.log("✅ TuningScreen exportado");
 }

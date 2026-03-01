@@ -1,5 +1,4 @@
 // ProfileSelectionScreen.js - Reconstruída com Padrão Garage
-console.log("👥 Carregando ProfileSelectionScreen (Standard Architecture)...");
 
 class ProfileSelectionScreen {
   constructor() {
@@ -24,7 +23,7 @@ class ProfileSelectionScreen {
   }
 
   show(data = {}) {
-    console.log("👥 Mostrando ProfileSelectionScreen", data);
+    // Mostrando ProfileSelectionScreen
 
     // Recriar se necessário (garantia de estado limpo)
     if (!document.getElementById("ps-container")) {
@@ -427,18 +426,18 @@ class ProfileSelectionScreen {
         .ps-stats-row { 
             display: flex; 
             justify-content: space-between; 
-            padding: 12px; 
-            gap: 15px; 
-            background: rgba(0, 0, 0, 0.4); 
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 18px; 
+            gap: 20px; 
+            background: rgba(0, 0, 0, 0.5); 
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
-        .ps-stat { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-        .ps-stat:first-child { align-items: flex-start; }
-        .ps-stat:last-child { align-items: flex-end; text-align: right; }
-        .ps-label { font-size: 0.7rem; color: #888; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; line-height: 1.2; }
-        .ps-value.money { color: #2ecc71; background: none !important; padding: 0 !important; }
+        .ps-stat { display: flex; flex-direction: column; gap: 4px; }
+        .ps-stat:first-child { align-items: flex-start; flex: 1; }
+        .ps-stat:last-child { align-items: flex-end; text-align: right; flex: 1; }
+        .ps-label { font-size: 0.65rem; color: #aaa; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .ps-value { font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.2; }
+        .ps-value.money { color: #2ecc71; background: transparent !important; }
 
         .ps-actions { 
             display: flex; gap: 10px; margin-top: 10px; opacity: 0; transition: 0.3s;

@@ -1,5 +1,4 @@
 ﻿// RaceScreen.js - v21.0 CLASSIC COCKPIT (Authentic Street Rod Experience)
-console.log("🏎️ RaceScreen v21.0: Classic Cockpit Loading...");
 
 class RaceScreen {
   constructor(eventSystem) {
@@ -15,6 +14,7 @@ class RaceScreen {
     this.player = { pos: 0, vel: 0, rpm: 800, gear: 0, wheelRot: 0, temp: 180 };
     this.enemy = { pos: 0, vel: 0, gear: 0 };
     this.trackLength = 1000; // 1km drag
+    this.difficulty = "normal";
 
     this.animationId = null;
     this.lastTime = 0;
@@ -23,6 +23,7 @@ class RaceScreen {
 
     // 2. MECHANICS
     this.perfectShiftWindow = false;
+    this.pendingPrize = 500;
     this.boundKeyDown = this.handleKeyDown.bind(this);
   }
 
@@ -40,8 +41,20 @@ class RaceScreen {
       return this;
     }
 
-    const idx = data.vehicleIndex !== undefined ? data.vehicleIndex : 0;
-    this.playerCar = this.profile.vehicles[idx] || this.profile.vehicles[0];
+    // Aceitar carro específico passado pela seleção ou usar o primeiro
+    if (data.playerCar) {
+      this.playerCar = data.playerCar;
+    } else {
+      const idx = data.vehicleIndex !== undefined ? data.vehicleIndex : 0;
+      this.playerCar = this.profile.vehicles[idx] || this.profile.vehicles[0];
+    }
+
+    // Configurar oponente com base na dificuldade se fornecido
+    if (data.difficulty) {
+      this.difficulty = data.difficulty;
+    }
+
+    this.pendingPrize = data.prize || 500;
 
     this.resetState();
     this.setupEnemy();
@@ -75,10 +88,13 @@ class RaceScreen {
 
   setupEnemy() {
     const pwr = this.playerCar?.power || 150;
+    const diffBoost =
+      { easy: 0.8, normal: 1.0, hard: 1.2 }[this.difficulty] || 1.0;
+
     this.enemyCar = {
       name: "Rival Local",
-      power: pwr * (0.9 + Math.random() * 0.2),
-      color: "#e74c3c",
+      power: pwr * (diffBoost * (0.9 + Math.random() * 0.2)),
+      color: "#ff4757",
     };
   }
 
@@ -379,7 +395,9 @@ class RaceScreen {
     title.innerText = win ? "VITÓRIA!" : "DERROTA...";
     title.style.color = win ? "#2ecc71" : "#e74c3c";
 
-    const reward = win ? 1500 : 200;
+    const reward = win
+      ? this.pendingPrize
+      : Math.floor(this.pendingPrize * 0.2);
     rewardEl.innerText =
       (win ? "+ $" : "- $") + Math.abs(reward).toLocaleString();
     rewardEl.style.color = win ? "#2ecc71" : "#e74c3c";

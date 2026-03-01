@@ -1,5 +1,4 @@
 // MainMenuScreen.js - VERSÃO LIMPA E OTIMIZADA
-console.log("🏠 Carregando MainMenuScreen...");
 
 class MainMenuScreen {
   constructor() {
@@ -7,7 +6,7 @@ class MainMenuScreen {
   }
 
   initialize() {
-    console.log("🏠 Inicializando menu principal...");
+    // Inicializando menu principal
     this.updateProfileData();
     this.render();
     this.attachEvents();
@@ -60,9 +59,7 @@ class MainMenuScreen {
     this.verifiedIndices = [];
     this.bgIndex = Math.floor(Math.random() * this.backgrounds.length);
 
-    console.log(
-      `🖼️ Slideshow iniciado: 50 slots locais configurados. (Iniciando com Fallback)`,
-    );
+    // Slideshow iniciado
 
     container.innerHTML = this.createMenuHTML(profile);
     this.addStyles();
@@ -367,9 +364,6 @@ class MainMenuScreen {
       garageBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
-        console.log("🚗 Navegando para Garagem...");
-
-        console.log("🚗 Navegando para Garagem...");
         if (window.eventSystem && window.eventSystem.showScreen) {
           window.eventSystem.showScreen("garage-screen");
         } else {
@@ -391,28 +385,24 @@ class MainMenuScreen {
 
     // Outros botões
     this.setupButton("race-button", () => {
-      console.log("🏁 Iniciando Sistema de Corrida...");
       if (window.eventSystem && window.eventSystem.showScreen) {
-        window.eventSystem.showScreen("race-screen");
+        window.eventSystem.showScreen("race-selection");
       }
     });
 
     this.setupButton("shop-button", () => {
-      console.log("🛒 Loja de Peças selecionada");
       if (window.eventSystem && window.eventSystem.showScreen) {
         window.eventSystem.showScreen("shop-screen");
       }
     });
 
     this.setupButton("car-shop-button", () => {
-      console.log("🚘 Agência selecionada");
       if (window.eventSystem && window.eventSystem.showScreen) {
         window.eventSystem.showScreen("car-shop-screen");
       }
     });
 
     this.setupButton("profiles-button", () => {
-      console.log("👤 Perfis selecionados");
       if (window.eventSystem && window.eventSystem.showScreen) {
         window.eventSystem.showScreen("profile-selection", { canGoBack: true });
       } else {
@@ -421,8 +411,9 @@ class MainMenuScreen {
     });
 
     this.setupButton("settings-button", () => {
-      console.log("⚙️ Configurações selecionadas");
-      alert("⚙️ Configurações em desenvolvimento");
+      if (window.eventSystem && window.eventSystem.showScreen) {
+        window.eventSystem.showScreen("settings");
+      }
     });
   }
 
@@ -468,9 +459,7 @@ class MainMenuScreen {
       index = -1; // Reset para indicar que não é um fundo local válido
     }
 
-    console.log(
-      `📡 Carregando background: ${index === -1 ? "Fallback" : "Local bg-" + index}...`,
-    );
+    // Fundo sendo carregado
 
     const imgTester = new Image();
     imgTester.src = targetUrl;
@@ -518,7 +507,6 @@ class MainMenuScreen {
   }
 
   cleanup() {
-    console.log("🧹 Limpando MainMenuScreen");
     this.stopBackgroundSlideshow();
   }
 }
@@ -527,5 +515,4 @@ class MainMenuScreen {
 if (typeof window !== "undefined") {
   window.MainMenuScreen = MainMenuScreen;
   window.mainMenuScreen = new MainMenuScreen();
-  console.log("✅ MainMenuScreen carregado");
 }

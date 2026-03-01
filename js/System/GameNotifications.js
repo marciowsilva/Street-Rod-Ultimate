@@ -1,5 +1,5 @@
 // GameNotifications.js - Sistema de notificações simplificado
-console.log("🔔 Carregando GameNotifications...");
+// GameNotifications.js - Sistema de notificações simplificado
 
 class GameNotifications {
   constructor() {
@@ -9,7 +9,7 @@ class GameNotifications {
     this.defaultDuration = 3000; // 3 segundos
     this.autoRemove = true;
 
-    console.log("[GameNotifications] Inicializado");
+    // GameNotifications Inicializado
 
     // Criar container
     this.createContainer();
@@ -192,7 +192,7 @@ class GameNotifications {
       }, notificationDuration);
     }
 
-    console.log(`[GameNotifications] ${type}: ${message}`);
+    // Notificação mostrada
     return notificationId;
   }
 
@@ -272,5 +272,4 @@ class GameNotifications {
 if (typeof window !== "undefined") {
   window.gameNotifications = new GameNotifications();
   window.GameNotifications = GameNotifications; // Referência à classe para compatibilidade
-  console.log("✅ GameNotifications instanciado e exportado");
 }

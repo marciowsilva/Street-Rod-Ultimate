@@ -1,5 +1,5 @@
 // ProfileManager.js - Versão Mínima Funcional
-console.log("👤 Carregando ProfileManager...");
+// ProfileManager.js - Versão Mínima Funcional
 
 class ProfileManager {
   constructor() {
@@ -8,7 +8,7 @@ class ProfileManager {
     this.profiles = this.loadProfiles();
     this.currentProfile = null;
 
-    console.log("✅ ProfileManager inicializado");
+    // Inicializado
   }
 
   loadProfiles() {
@@ -85,7 +85,7 @@ class ProfileManager {
     this.profiles.push(defaultProfile);
     this.saveProfiles();
 
-    console.log(`✅ Perfil "${name}" criado`);
+    // Perfil criado
     return true;
   }
 
@@ -99,7 +99,7 @@ class ProfileManager {
     this.currentProfile = profile;
     localStorage.setItem(this.currentProfileKey, profileName);
 
-    console.log(`✅ Perfil "${profileName}" selecionado`);
+    // Perfil selecionado
     return true;
   }
 
@@ -118,7 +118,7 @@ class ProfileManager {
 
     this.saveProfiles();
 
-    console.log(`✅ Perfil "${profile.name}" salvo`);
+    // Perfil salvo
     return true;
   }
 }
@@ -127,5 +127,5 @@ class ProfileManager {
 if (typeof window !== "undefined") {
   window.profileManager = new ProfileManager();
   window.ProfileManager = ProfileManager;
-  console.log("✅ ProfileManager exportado para window");
+  // Exportado para window
 }

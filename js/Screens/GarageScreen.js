@@ -1,5 +1,4 @@
-// GarageScreen.js - LOJA DE PEÇAS / GARAGEM DO JOGADOR (Evolução v1.2)
-console.log("🏠 Carregando GarageScreen...");
+// GarageScreen.js - VERSÃO FINAL REFINADA (GLASS HUD)/ GARAGEM DO JOGADOR (Evolução v1.2)
 
 class GarageScreen {
   constructor(eventSystem) {
@@ -15,7 +14,7 @@ class GarageScreen {
   }
 
   show() {
-    console.log("🏠 Abrindo Garagem");
+    // Abrindo Garagem
     this.isActive = true;
 
     // Forçar reload do perfil para garantir dados atualizados
@@ -39,7 +38,7 @@ class GarageScreen {
   }
 
   hide() {
-    console.log("🏠 Escondendo GarageScreen");
+    // Escondendo Garagem
     this.isActive = false;
     const container = document.getElementById("garage-container");
     if (container) container.remove();
@@ -106,7 +105,7 @@ class GarageScreen {
   }
 
   render() {
-    console.log("🏠 Renderizando GarageScreen");
+    // Renderizando Garagem
 
     const oldContainer = document.getElementById("garage-container");
     if (oldContainer) oldContainer.remove();

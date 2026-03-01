@@ -1,5 +1,5 @@
 // ShopScreen.js - LOJA DE PEÇAS ULTIMATE
-console.log("🏪 Carregando ShopScreen (Parts)...");
+// ShopScreen.js - LOJA DE PEÇAS ULTIMATE
 
 class ShopScreen {
   constructor(eventSystem) {
@@ -125,7 +125,7 @@ class ShopScreen {
   }
 
   show() {
-    console.log("🏪 Abrindo Loja de Peças");
+    // Abrindo Loja de Peças
     this.isActive = true;
     this.updateProfileData();
     this.render();
@@ -150,277 +150,176 @@ class ShopScreen {
   }
 
   render() {
-    const container = document.createElement("div");
-    container.id = "shop-container";
-    container.className = "ps-root"; // Usar classes globais se existirem
+    const container = document.getElementById("game-container");
+    if (!container) return;
 
-    // Fundo (Reaproveitando o estilo do MainMenu ou um novo)
-    // Vamos usar um fundo fixo de "Oficina" escuro para diferenciar
-    const bgUrl = "./assets/images/backgrounds/bg-15.jpg"; // Usando um dos fundos da galeria como base
+    const bgUrl =
+      "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80&w=2070";
 
-    container.innerHTML = `
-            <style id="shop-styles">
-                #shop-container {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: url('${bgUrl}') no-repeat center center fixed; /* Fixed BG */
-                    background-size: cover;
-                    font-family: 'Rajdhani', sans-serif;
-                    color: white;
-                    z-index: 100;
-                    display: flex;
-                    flex-direction: column;
-                    overflow-y: auto; /* Scroll Global */
-                }
-                
-                .shop-overlay {
-                    position: fixed; /* Fixed Overlay */
-                    inset: 0;
-                    background: rgba(10, 10, 20, 0.85);
-                    backdrop-filter: blur(8px);
-                    z-index: 1;
-                }
-
-                .shop-content {
-                    position: relative;
-                    z-index: 10;
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    padding: 30px;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    width: 100%;
-                }
-
-                /* Header */
-                .shop-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 30px;
-                    border-bottom: 1px solid rgba(255,255,255,0.1);
-                    padding-bottom: 20px;
-                }
-
-                .shop-title h1 {
-                    font-size: 3rem;
-                    margin: 0;
-                    color: #fff;
-                    text-shadow: 0 0 20px rgba(46, 213, 115, 0.5);
-                    letter-spacing: 5px;
-                }
-                .shop-title span { color: #2ed573; }
-
-                .shop-wallet {
-                    font-size: 2rem;
-                    color: #2ed573;
-                    font-weight: 700;
-                    text-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
-                    background: rgba(0,0,0,0.5);
-                    padding: 10px 25px;
-                    border-radius: 50px;
-                    border: 1px solid rgba(46, 213, 115, 0.3);
-                }
-
-                /* Layout Principal */
-                .shop-main {
-                    display: flex;
-                    gap: 30px;
-                    flex: 1;
-                    /* overflow removido para permitir scroll global */
-                    align-items: flex-start; /* Necessário para sticky funcionar bem se height for auto */
-                }
-
-                /* Sidebar Categorias */
-                .shop-categories {
-                    width: 250px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 15px;
-                    position: sticky; /* FIXO AO ROLAR */
-                    top: 20px;        /* Distância do topo */
-                    height: fit-content;
-                    z-index: 10;
-                }
-
-                .cat-btn {
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    color: #aaa;
-                    padding: 15px 20px;
-                    font-size: 1.1rem;
-                    text-align: left;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    border-radius: 8px;
-                    font-family: 'Rajdhani', sans-serif;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-
-                .cat-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                    padding-left: 25px;
-                }
-
-                .cat-btn.active {
-                    background: rgba(46, 213, 115, 0.15);
-                    border-color: #2ed573;
-                    color: #2ed573;
-                    box-shadow: 0 0 20px rgba(46, 213, 115, 0.1);
-                }
-
-                /* Grid de Produtos */
-                .shop-grid {
-                    flex: 1;
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                    grid-auto-rows: max-content;
-                    gap: 20px;
-                    /* Scroll interno removido */
-                    padding: 20px;
-                    padding-right: 10px;
-                }
-
-                /* Scrollbar Custom */
-                .shop-grid::-webkit-scrollbar { width: 6px; }
-                .shop-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-                .shop-grid::-webkit-scrollbar-thumb { background: #2ed573; border-radius: 3px; }
-
-                /* Card de Produto */
-                .part-card {
-                    background: rgba(20, 20, 30, 0.6);
-                    border: 1px solid rgba(255, 255, 255, 0.08);
-                    border-radius: 12px;
-                    padding: 20px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 15px;
-                    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                    position: relative;
-                    overflow: hidden;
-                }
-
-                .part-card:hover {
-                    transform: translateY(-5px);
-                    background: rgba(20, 20, 30, 0.8);
-                    border-color: rgba(46, 213, 115, 0.5);
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                }
-
-                .part-icon {
-                    font-size: 3rem;
-                    align-self: center;
-                    margin-bottom: 10px;
-                    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-                }
-
-                .part-info h3 { margin: 0; font-size: 1.4rem; color: #fff; }
-                .part-info p { margin: 5px 0 0; font-size: 0.9rem; color: #888; }
-                
-                .part-stats {
-                    display: flex;
-                    gap: 10px;
-                    font-size: 0.85rem;
-                    color: #2ed573;
-                    background: rgba(46, 213, 115, 0.1);
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    width: fit-content;
-                }
-
-                .part-price {
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    color: #fff;
-                    margin-top: auto;
-                }
-
-                .buy-btn {
-                    background: #2ed573;
-                    color: #000;
-                    border: none;
-                    padding: 12px;
-                    font-family: 'Rajdhani', sans-serif;
-                    font-weight: 800;
-                    font-size: 1rem;
-                    cursor: pointer;
-                    border-radius: 6px;
-                    transition: all 0.2s;
-                    text-transform: uppercase;
-                }
-
-                .buy-btn:hover {
-                    background: #fff;
-                    box-shadow: 0 0 15px #2ed573;
-                }
-
-                .buy-btn:active { transform: scale(0.95); }
-
-                .nav-btn {
+    if (!document.getElementById("shop-container")) {
+      container.innerHTML = `
+            <div id="shop-container" class="ps-root" style="
+                background: url('${bgUrl}') center/cover no-repeat;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                overflow: hidden;
+                font-family: 'Rajdhani', sans-serif;
+                color: #fff;
+            ">
+                <div class="ps-glass-overlay" style="
                     position: absolute;
-                    top: 30px;
-                    left: 30px;
-                    background: transparent;
-                    border: 1px solid rgba(255,255,255,0.2);
-                    color: white;
-                    padding: 10px 20px;
-                    cursor: pointer;
-                    font-family: 'Rajdhani', sans-serif;
-                    font-weight: 600;
-                    border-radius: 6px;
-                    transition: all 0.3s;
-                    z-index: 100;
-                }
-                .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+                    inset: 0;
+                    background: radial-gradient(circle at center, rgba(10, 10, 25, 0.75) 0%, rgba(5, 5, 10, 0.95) 100%);
+                    backdrop-filter: blur(8px);
+                    z-index: 0;
+                "></div>
 
-            </style>
+                <button id="shop-back-btn" class="nav-btn st-btn-secondary anim-fade-down" style="position: absolute; top: 30px; left: 30px; z-index: 100; font-size: 1rem; letter-spacing: 2px;">
+                    &larr; VOLTAR
+                </button>
 
-            <div class="shop-overlay"></div>
-            
-            <button id="shop-back-btn" class="nav-btn">← VOLTAR</button>
+                <header class="ps-header anim-fade-down" style="position: relative; z-index: 10; padding: 40px 0 20px; text-align: center;">
+                    <h1 class="ps-game-title" style="font-size: 3.5rem; font-weight: 800; letter-spacing: 8px; margin: 0; text-shadow: 0 0 30px rgba(46, 213, 115, 0.5);">
+                        AUTO <span class="ps-accent-text" style="color: #2ed573;">PARTS</span>
+                    </h1>
+                    <p class="ps-game-subtitle" style="color: #aaa; font-size: 1.1rem; letter-spacing: 4px; margin-top: 5px; text-transform: uppercase;">PERFORMANCE & TUNING</p>
+                </header>
 
-            <div class="shop-content">
-                <div class="shop-header">
-                    <div class="shop-title" style="margin-left: 100px;">
-                        <h1>LOJA DE <span style="color: #2ed573;">PEÇAS</span></h1>
-                        <div style="font-size: 1rem; color: #666; letter-spacing: 2px;">PERFORMANCE & TUNING</div>
-                    </div>
-                    
-                    <div class="shop-wallet">
-                        $ <span id="wallet-amount">${this.profile ? this.profile.cash.toLocaleString() : "0"}</span>
+                <div class="anim-fade-down" style="position: absolute; top: 30px; right: 30px; z-index: 100;">
+                    <div style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(46, 213, 115, 0.3); padding: 15px 30px; border-radius: 15px; backdrop-filter: blur(5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="font-size: 0.8rem; color: #aaa; letter-spacing: 2px; text-transform: uppercase;">SALDO DISPONÍVEL</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: #2ed573; text-shadow: 0 0 15px rgba(46, 213, 115, 0.4);">
+                            $ <span id="wallet-amount">${this.profile ? this.profile.cash.toLocaleString() : "0"}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="shop-main">
-                    <!-- Sidebar -->
-                    <div class="shop-categories">
+                <main class="anim-fade-up" style="position: relative; z-index: 10; flex: 1; display: flex; gap: 30px; padding: 20px 40px 40px; max-width: 1400px; margin: 0 auto; width: 100%;">
+                    
+                    <aside style="width: 250px; display: flex; flex-direction: column; gap: 15px;">
+                        <h3 style="color: #2ed573; font-size: 1.2rem; margin-bottom: 10px; letter-spacing: 2px;">CATEGORIAS</h3>
                         <button class="cat-btn ${this.currentCategory === "engine" ? "active" : ""}" data-cat="engine">MOTOR</button>
                         <button class="cat-btn ${this.currentCategory === "transmission" ? "active" : ""}" data-cat="transmission">TRANSMISSÃO</button>
                         <button class="cat-btn ${this.currentCategory === "tires" ? "active" : ""}" data-cat="tires">PNEUS & RODAS</button>
                         <button class="cat-btn" data-cat="visual">ESTÉTICA (Breve)</button>
-                    </div>
+                    </aside>
 
-                    <!-- Grid -->
-                    <div class="shop-grid" id="shop-grid">
-                        <!-- Items rendered via JS -->
+                    <div id="shop-grid" style="
+                        flex: 1;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                        grid-auto-rows: max-content;
+                        gap: 25px;
+                        overflow-y: auto;
+                        padding-right: 15px;
+                    ">
+                        <!-- Part Cards via JS -->
                     </div>
-                </div>
+                </main>
             </div>
         `;
 
-    document.getElementById("game-container").appendChild(container);
+      this.addStyles();
+    }
     this.renderItems();
+  }
+
+  addStyles() {
+    if (document.getElementById("shop-premium-styles")) return;
+    const style = document.createElement("style");
+    style.id = "shop-premium-styles";
+    style.textContent = `
+        #shop-grid::-webkit-scrollbar { width: 8px; }
+        #shop-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        #shop-grid::-webkit-scrollbar-thumb { background: #2ed573; border-radius: 4px; }
+
+        .cat-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            padding: 15px 20px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .cat-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; padding-left: 25px; }
+        .cat-btn.active { background: rgba(46, 213, 115, 0.15); border-color: #2ed573; color: #2ed573; box-shadow: 0 0 20px rgba(46, 213, 115, 0.2); }
+
+        .part-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .part-card:hover {
+            transform: translateY(-5px);
+            background: rgba(20, 20, 30, 0.9);
+            border-color: rgba(46, 213, 115, 0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .part-icon { font-size: 3.5rem; align-self: center; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(46, 213, 115, 0.3)); transition: transform 0.3s; }
+        .part-card:hover .part-icon { transform: scale(1.1); }
+
+        .part-info h3 { margin: 0; font-size: 1.3rem; color: #fff; letter-spacing: 1px; }
+        .part-info p { margin: 5px 0 0; font-size: 0.9rem; color: #aaa; line-height: 1.4; }
+        
+        .part-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #2ed573;
+            background: rgba(46, 213, 115, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: fit-content;
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .part-price { font-size: 1.8rem; font-weight: 800; color: #fff; margin-top: auto; }
+
+        .buy-action-btn {
+            background: linear-gradient(135deg, #2ed573, #26ba62);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .buy-action-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(46, 213, 115, 0.6); transform: translateY(-2px); }
+        .buy-action-btn:active { transform: translateY(1px); }
+    `;
+    document.head.appendChild(style);
   }
 
   renderItems() {
     const grid = document.getElementById("shop-grid");
+    if (!grid) return;
     grid.innerHTML = "";
 
     const items = this.partsCatalog[this.currentCategory] || [];
@@ -433,26 +332,31 @@ class ShopScreen {
 
     items.forEach((item) => {
       const card = document.createElement("div");
-      card.className = "part-card anim-fade-up";
+      card.className = "part-card";
+      card.style.animation = "fadeInUp 0.5s ease backwards";
 
-      // Construir string de stats
       let statHtml = "";
       if (item.powerBonus) statHtml += `<span>+${item.powerBonus} HP</span>`;
       if (item.acc) statHtml += `<span>-${item.acc}% 0-100</span>`;
       if (item.grip) statHtml += `<span>+${item.grip} GRIP</span>`;
 
       card.innerHTML = `
-                <div class="part-icon">${item.icon}</div>
-                <div class="part-info">
-                    <h3>${item.name}</h3>
-                    <p>${item.desc}</p>
-                </div>
-                ${statHtml ? `<div class="part-stats">${statHtml}</div>` : ""}
-                <div class="part-price">$${item.price.toLocaleString()}</div>
-                <button class="buy-btn" data-id="${item.id}" data-price="${item.price}">COMPRAR</button>
-            `;
+        <div class="part-icon">${item.icon}</div>
+        <div class="part-info">
+            <h3>${item.name}</h3>
+            <p>${item.desc}</p>
+        </div>
+        ${statHtml ? `<div class="part-stats">${statHtml}</div>` : ""}
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto; padding-top:10px;">
+            <div>
+              <span style="font-size: 0.7rem; color: #2ed573; letter-spacing: 1px; display: block; margin-bottom: -5px;">PREÇO</span>
+              <div class="part-price">$${item.price.toLocaleString()}</div>
+            </div>
+            <button class="buy-action-btn" data-id="${item.id}" data-price="${item.price}" style="padding: 10px 20px;">COMPRAR</button>
+        </div>
+      `;
 
-      const buyBtn = card.querySelector(".buy-btn");
+      const buyBtn = card.querySelector(".buy-action-btn");
       buyBtn.onclick = () => this.buyItem(item);
 
       grid.appendChild(card);
@@ -463,42 +367,38 @@ class ShopScreen {
     if (!this.profile) return;
 
     if (this.profile.cash >= item.price) {
-      // Sucesso
+      if (window.audioSystem) window.audioSystem.play("buy");
+
       this.profile.cash -= item.price;
 
-      // Adicionar ao inventário (estrutura básica)
       if (!this.profile.inventory) this.profile.inventory = [];
       this.profile.inventory.push(item);
 
-      // Salvar
       if (window.profileManager) {
         window.profileManager.saveProfile(this.profile);
       }
 
-      // UI Feedback
       this.updateWalletUI();
-      this.playSound("cash");
 
-      // Notificação Global
       if (window.gameNotifications) {
         window.gameNotifications.success(`Comprado: ${item.name}`);
       }
 
-      // Notificação visual (Alert temporário, idealmente um Toast Notification)
       const btn = document.querySelector(`button[data-id="${item.id}"]`);
-      const originalText = btn.innerText;
-      btn.innerText = "COMPRADO!";
-      btn.style.background = "#fff";
-      btn.style.color = "#2ed573";
+      if (btn) {
+        const originalText = btn.innerText;
+        btn.innerText = "COMPRADO!";
+        btn.style.background = "#fff";
+        btn.style.color = "#2ed573";
 
-      setTimeout(() => {
-        btn.innerText = originalText;
-        btn.style.background = "#2ed573";
-        btn.style.color = "#000";
-      }, 1000);
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.style.background = "";
+          btn.style.color = "";
+        }, 1000);
+      }
     } else {
-      // Falha
-      this.playSound("error");
+      if (window.audioSystem) window.audioSystem.play("error");
 
       if (window.gameNotifications) {
         window.gameNotifications.error(
@@ -507,44 +407,39 @@ class ShopScreen {
       }
 
       const btn = document.querySelector(`button[data-id="${item.id}"]`);
-      btn.classList.add("shake-anim"); // Assumindo keyframes globais ou inline
-      btn.innerText = "DINHEIRO INSUFICIENTE";
-      btn.style.background = "#ff4757";
+      if (btn) {
+        btn.innerText = "SEM SALDO";
+        btn.style.background = "#ff4757";
+        btn.style.color = "#fff";
 
-      setTimeout(() => {
-        btn.innerText = "COMPRAR";
-        btn.style.background = "#2ed573";
-        btn.classList.remove("shake-anim");
-      }, 1500);
+        setTimeout(() => {
+          btn.innerText = "COMPRAR";
+          btn.style.background = "";
+          btn.style.color = "";
+        }, 1500);
+      }
     }
   }
 
   updateWalletUI() {
     const walletEl = document.getElementById("wallet-amount");
-    if (walletEl) {
+    if (walletEl && this.profile) {
       walletEl.innerText = this.profile.cash.toLocaleString();
     }
   }
 
-  playSound(type) {
-    // Implementação básica de som ou chamada ao AudioManager
-    console.log(`🔊 Som tocado: ${type}`);
-  }
-
   attachEvents() {
-    // Voltar
-    document.getElementById("shop-back-btn").onclick = () => {
-      if (this.eventSystem) this.eventSystem.showScreen("main-menu");
-    };
+    const backBtn = document.getElementById("shop-back-btn");
+    if (backBtn) {
+      backBtn.onclick = () => {
+        if (this.eventSystem) this.eventSystem.showScreen("main-menu");
+      };
+    }
 
-    // Categorias
-    document.querySelectorAll(".cat-btn").forEach((btn) => {
+    const catBtns = document.querySelectorAll(".cat-btn");
+    catBtns.forEach((btn) => {
       btn.onclick = (e) => {
-        // Remove active de todos
-        document
-          .querySelectorAll(".cat-btn")
-          .forEach((b) => b.classList.remove("active"));
-        // Add active ao clicado
+        catBtns.forEach((b) => b.classList.remove("active"));
         e.target.classList.add("active");
 
         this.currentCategory = e.target.dataset.cat;
