@@ -686,8 +686,8 @@ class GarageScreen {
            <button class="gr-fav-btn ${car.isFavorite ? "active" : ""}" title="Favoritar">⭐</button>
 
            <div class="gr-image-card">
-              ${car.imageUrl ? `<img src="${car.imageUrl}" alt="${car.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ""}
-              <div class="gr-icon-fallback" style="color: ${car.color || "#fff"}; display: ${car.imageUrl ? "none" : "flex"}">${car.icon || "🚗"}</div>
+              <img src="${window.getCarImageURL(car)}" alt="${car.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="gr-icon-fallback" style="color: ${car.color || "#fff"}; display: none;">${car.icon || "🚗"}</div>
            </div>
 
            <div class="gr-info">
@@ -788,12 +788,14 @@ class GarageScreen {
 
     // Display car image or emoji fallback
     const pmIconEl = document.getElementById("gr-pm-icon");
-    if (car.imageUrl) {
-      pmIconEl.innerHTML = `<img src="${car.imageUrl}" alt="${car.name}" style="width: 300px; height: 300px; object-fit: cover; border-radius: 12px;" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\\'font-size:15rem; color: ${car.color || "#fff"}\\'>🚗</div>')">`;
-    } else {
-      pmIconEl.innerText = car.icon || "🚗";
-      pmIconEl.style.color = car.color || "#fff";
-    }
+    const imageUrl = window.getCarImageURL(car);
+
+    pmIconEl.innerHTML = `
+      <img src="${imageUrl}" 
+           alt="${car.name}" 
+           style="width: 300px; height: 300px; object-fit: cover; border-radius: 12px;" 
+           onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\\'font-size:15rem; color: ${car.color || "#fff"}\\'>${car.icon || "🚗"}</div>')">
+    `;
 
     document.getElementById("gr-pm-title").innerText = car.name;
 

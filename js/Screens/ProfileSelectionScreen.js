@@ -167,13 +167,13 @@ class ProfileSelectionScreen {
         #ps-container {
             --ps-primary: #2ed573; /* Verde (Boot Default) */
             --ps-primary-rgb: 46, 213, 115;
-            --ps-bg-overlay: radial-gradient(circle at center, rgba(10, 10, 20, 0.7) 0%, rgba(5, 5, 10, 0.95) 100%);
+            --ps-bg-overlay: radial-gradient(circle at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
         }
 
         #ps-container.management-mode {
             --ps-primary: #9c88ff; /* Lilás (Gestão) */
             --ps-primary-rgb: 156, 136, 255;
-            --ps-bg-overlay: rgba(10, 10, 20, 0.85); /* Flat Dark (Garage Style) */
+            --ps-bg-overlay: rgba(10, 10, 20, 0.9);
         }
 
         /* --- ROOT CONTAINER --- */
@@ -182,14 +182,14 @@ class ProfileSelectionScreen {
             inset: 0;
             width: 100%;
             height: 100%;
-            background: #111; /* Fallback */
+            background: #000;
             color: white;
             font-family: 'Rajdhani', sans-serif;
-            overflow-y: auto; /* Scroll Principal */
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             
-            /* Boot Background Imagem Fixa */
+            /* Boot Background: Restoring the high-quality car photo */
             background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2070') center/cover no-repeat fixed;
         }
 
@@ -424,10 +424,20 @@ class ProfileSelectionScreen {
         .ps-card h3 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: white; }
         .ps-level { color: var(--ps-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; }
 
-        .ps-stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-radius: 8px; gap: 20px; }
-        .ps-stat { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; flex: 1; }
-        .ps-label { font-size: 0.75rem; color: #888; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        .ps-value { font-size: 1.2rem; font-weight: 800; color: white; background: none !important; padding: 0 !important; line-height: 1.2; }
+        .ps-stats-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 12px; 
+            gap: 15px; 
+            background: rgba(0, 0, 0, 0.4); 
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ps-stat { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .ps-stat:first-child { align-items: flex-start; }
+        .ps-stat:last-child { align-items: flex-end; text-align: right; }
+        .ps-label { font-size: 0.7rem; color: #888; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .ps-value { font-size: 1.1rem; font-weight: 800; color: white; line-height: 1.2; }
         .ps-value.money { color: #2ecc71; background: none !important; padding: 0 !important; }
 
         .ps-actions { 

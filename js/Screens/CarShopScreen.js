@@ -103,7 +103,7 @@ class CarShopScreen {
           display: flex;
           flex-direction: column;
           padding: 30px;
-          max-width: 1400px;
+          max-width: 1200px;
           margin: 0 auto;
           width: 100%;
         }
@@ -116,20 +116,20 @@ class CarShopScreen {
           margin-bottom: 30px;
           border-bottom: 1px solid rgba(255,255,255,0.1);
           padding-bottom: 20px;
-          gap: 30px;
         }
 
         .cs-title {
-          flex: 1;
           margin-left: 100px;
+          flex: 1;
         }
 
         .cs-title h1 {
           font-size: 3rem;
           margin: 0;
           color: #fff;
-          text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+          text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
           letter-spacing: 5px;
+          font-weight: 800;
         }
         .cs-title span { color: #00ff88; }
 
@@ -137,7 +137,8 @@ class CarShopScreen {
           font-size: 1rem;
           color: #888;
           letter-spacing: 2px;
-          margin-top: 0;
+          margin-top: 5px;
+          text-transform: uppercase;
         }
 
         .cs-wallet {
@@ -479,9 +480,13 @@ class CarShopScreen {
       const badgeClass = car.condition === "new" ? "new" : "used";
       const badgeText = car.condition === "new" ? "NOVO" : "USADO";
 
-      const imageHtml = car.imageUrl
-        ? `<img src="${car.imageUrl}" alt="${car.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:3rem&quot;>${car.icon}</div>'">`
-        : `<div style="font-size:3rem">${car.icon}</div>`;
+      const imagePath = window.getCarImageURL(car);
+      const imageHtml = `
+        <img src="${imagePath}" 
+             alt="${car.name}" 
+             style="width:100%;height:100%;object-fit:cover;display:block;" 
+             onerror="this.onerror=null; this.parentElement.innerHTML='<div style=&quot;font-size:3rem&quot;>${car.icon}</div>'">
+      `;
 
       card.innerHTML = `
         <div class="car-card-image">
@@ -489,17 +494,18 @@ class CarShopScreen {
           <div class="car-card-badge ${badgeClass}">${badgeText}</div>
         </div>
         <div class="car-card-body">
-          <div>
+          <div style="margin-bottom: 5px;">
             <div class="car-card-name">${car.name}</div>
             <div class="car-card-year">${car.year}</div>
           </div>
           <div class="car-card-stats">
             <div class="car-stat-badge">⚡ ${car.power} HP</div>
             <div class="car-stat-badge">⚙️ ${car.engineType.toUpperCase()}</div>
-            <div class="car-stat-badge">🏎️ ${car.vehicleType}</div>
           </div>
-          <div class="car-card-price">$${car.price.toLocaleString()}</div>
-          <button class="buy-btn" onclick="window.carShopScreen.showDetails('${car.id}', event)">VER DETALHES</button>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto; padding-top:10px;">
+            <div class="car-card-price">$${car.price.toLocaleString()}</div>
+            <button class="buy-btn" onclick="window.carShopScreen.showDetails('${car.id}', event)" style="padding: 8px 15px; font-size: 0.85rem;">DETALHES</button>
+          </div>
         </div>
       `;
 
@@ -510,17 +516,18 @@ class CarShopScreen {
   showDetails(carId, event) {
     event.preventDefault();
     event.stopPropagation();
-
     const car = this.carsCatalog.find((c) => c.id === carId);
     if (!car) return;
-
     this.selectedCar = car;
     const modal = document.getElementById("car-modal");
     const content = document.getElementById("car-modal-content");
-
-    const imageHtml = car.imageUrl
-      ? `<img src="${car.imageUrl}" alt="${car.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%&quot;>${car.icon}</div>'">`
-      : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%">${car.icon}</div>`;
+    const imagePath = window.getCarImageURL(car);
+    const imageHtml = `
+      <img src="${imagePath}" 
+           alt="${car.name}" 
+           style="width:100%;height:100%;object-fit:cover;display:block;" 
+           onerror="this.onerror=null; this.parentElement.innerHTML='<div style=&quot;font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%&quot;>${car.icon}</div>'">
+    `;
 
     const canAfford = this.profile && this.profile.cash >= car.price;
 

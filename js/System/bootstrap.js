@@ -281,4 +281,22 @@ if (document.readyState === "loading") {
 window.initializeSystem = initializeSystem;
 window.showFirstScreen = showFirstScreen;
 
+// Utilitário global para imagens de carros
+window.getCarImageURL = function (car) {
+  // Se já tiver uma URL completa (http), usa ela
+  if (car.imageUrl && car.imageUrl.startsWith("http")) {
+    return car.imageUrl;
+  }
+
+  // Se for um caminho local, garante que comece corretamente
+  if (car.imageUrl) {
+    return car.imageUrl;
+  }
+
+  // Fallback padrão baseado no ID do carro para facilitar troca de arquivos
+  // O usuário pode simplesmente colocar uma foto com o nome [id].jpg em assets/cars/
+  const fileName = car.id.replace("car_", "") + ".jpg";
+  return `assets/cars/${fileName}`;
+};
+
 console.log("✅ Bootstrap carregado e pronto");
